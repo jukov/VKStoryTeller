@@ -1,0 +1,4 @@
+<resources>
+	<string name="app_name">VKStoryTeller</string>
+	<string name="title_activity_surface">SurfaceActivity</string>
+</resources>
