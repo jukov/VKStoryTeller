@@ -2,20 +2,16 @@ package info.jukov.vkstoryteller.surface;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.util.Pair;
-import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import info.jukov.vkstoryteller.MathUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * User: jukov
@@ -39,32 +35,32 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 	private static final String KEY_POINTERS = "KEY_POINTERS";
 
 	private static final int FIRST_POINTER_ID = 0;
-
-	private Handler handler;
 	private final SurfaceHolder surfaceHolder;
 	private final Paint paint;
-
+	private final Paint greenPaint;
+	private Handler handler;
 	private DragableImage dragableImage;
 
-	private int surfaceWidth;
-	private int surfaceHeight;
-
 	private Pair<Float, Float> previousCentroid;
-
+	private Float previousDistanceSumFromPointsToCentroid;
 	private float[] previousPointers;
-
 
 	RenderThread(final SurfaceHolder surfaceHolder, final DragableImage dragableImage) {
 		super(RENDER_THREAD_NAME);
 		this.surfaceHolder = surfaceHolder;
 		this.dragableImage = dragableImage;
 		paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		greenPaint = new Paint();
+		greenPaint.setColor(Color.GREEN);
 
 		//TODO draw on ui thread
 		final Canvas canvas = surfaceHolder.lockCanvas();
-		dragableImage.setX(100);
-		dragableImage.setY(100);
-		canvas.drawBitmap(dragableImage.getBitmap(), 100, 100, paint);
+		dragableImage.setX(256);
+		dragableImage.setY(256);
+
+		final Matrix matrix = new Matrix();
+		matrix.postTranslate(256 - dragableImage.getWidth() / 2, 256 - dragableImage.getHeight() / 2);
+		canvas.drawBitmap(dragableImage.getBitmap(), matrix, paint);
 		surfaceHolder.unlockCanvasAndPost(canvas);
 	}
 
@@ -89,39 +85,60 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 				break;
 			case MESSAGE_POINTER_MOVE:
 				final float[] currentPointers = message.getData().getFloatArray(KEY_POINTERS);
+				if (currentPointers == null) {
+					throw new IllegalStateException();
+				}
 
-				if (previousPointers == null) {
+				if (previousCentroid == null) {//TODO нормальное условие
+					previousCentroid = MathUtils.getCentroid(currentPointers);
+					previousDistanceSumFromPointsToCentroid = MathUtils.getAverageDistanceFromPointsToCentroid(currentPointers);
 					previousPointers = currentPointers;
 					return true;
 				}
 
-				if (previousCentroid == null) {
-					previousCentroid = MathUtils.getCentroid(currentPointers);
-					return true;
-				}
+				final Matrix matrix = new Matrix();
 
+				//Translate
 				final Pair<Float, Float> currentCentroid = MathUtils.getCentroid(currentPointers);
 
-				final float diffX = previousCentroid.first - currentCentroid.first;
-				final float diffY = previousCentroid.second - currentCentroid.second;
+				final float newX = dragableImage.getX() - (previousCentroid.first - currentCentroid.first);
+				final float newY = dragableImage.getY() - (previousCentroid.second - currentCentroid.second);
 
-				final float newX = dragableImage.getX() - diffX;
-				final float newY = dragableImage.getY() - diffY;
+				//Scale
+				final float currentDistanceSumFromPointsToCentroid = MathUtils.getAverageDistanceFromPointsToCentroid(currentPointers);
+				final float distanceDiff = (previousDistanceSumFromPointsToCentroid - currentDistanceSumFromPointsToCentroid) / 300;
+				final float newScale = dragableImage.getScale() - distanceDiff;
+
+				//Rotate
+				final float averageAngle = MathUtils.getAverageAngleBetweenPointsPairsAndCentroid(currentPointers, previousPointers);
+				final float newAngle = dragableImage.getAngle() + averageAngle;
+
+				Log.i(TAG, "handleMessage: " + averageAngle);
+
+				previousCentroid = currentCentroid;
+				previousDistanceSumFromPointsToCentroid = currentDistanceSumFromPointsToCentroid;
+				previousPointers = currentPointers;
+
+				matrix.preRotate(newAngle);
+				matrix.setScale(newScale, newScale);
+				matrix.postTranslate(newX - (dragableImage.getWidthCenter() * dragableImage.getScale()),
+					newY - (dragableImage.getHeightCenter() * dragableImage.getScale()));
 
 				final Canvas canvas = surfaceHolder.lockCanvas();
 				canvas.drawColor(Color.BLACK);
-				canvas.drawBitmap(dragableImage.getBitmap(), newX, newY, paint);
+				canvas.drawBitmap(dragableImage.getBitmap(), matrix, paint);
+				canvas.drawRect(newX - 3, newY - 3, newX + 3, newY + 3, greenPaint);
+				dragableImage.setAngle(newAngle);
+				dragableImage.setScale(newScale);
 				dragableImage.setX(newX);
 				dragableImage.setY(newY);
 				surfaceHolder.unlockCanvasAndPost(canvas);
 
-				previousPointers = currentPointers;
-				previousCentroid = currentCentroid;
-
 				break;
 			case MESSAGE_POINTER_UP:
-				pointerId = message.getData().getInt(KEY_POINTER_ID);
+//				pointerId = message.getData().getInt(KEY_POINTER_ID);
 				previousCentroid = null;
+				previousDistanceSumFromPointsToCentroid = null;
 				previousPointers = null;
 				break;
 			default:
@@ -131,8 +148,7 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 	}
 
 	public void updateSize(final int width, final int height) {
-		surfaceWidth = width;
-		surfaceHeight = height;
+
 	}
 
 	public void onPointerMoveEvent(final float x, final float y, final int pointerId) {
