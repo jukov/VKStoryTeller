@@ -110,12 +110,12 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 				final float newScale = dragableImage.getScale() - distanceDiff;
 
 				//Rotate
-				final float averageAngle = MathUtils.getAverageAngleBetweenPointsPairsAndCentroid(currentPointers, previousPointers);
+				final float averageAngle = MathUtils.getAverageAngleBetweenPointsPairsAndCentroid(previousPointers, currentPointers);
 
 				float newAngle = dragableImage.getAngle();
 
 				if (!Float.isNaN(averageAngle)) {
-					newAngle += averageAngle;
+					newAngle += (averageAngle * 1.5);
 				}
 
 //				Log.i(TAG, "handleMessage: " + averageAngle);

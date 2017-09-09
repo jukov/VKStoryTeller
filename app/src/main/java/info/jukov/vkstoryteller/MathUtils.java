@@ -83,15 +83,17 @@ public final class MathUtils {
 			final float cos = scalarProduct / (vector1Length * vector2Length);
 			final float angle = (float) Math.toDegrees(Math.acos(cos));
 
-			final float signedAngle = angle * getVectorDirectionOnCircle(
-				endPoints[i],
-				endPoints[i + 1],
+			final float signedAngle = angle * getOrientedSquare(
 				beginPoints[i],
 				beginPoints[i + 1],
-				centroid
+				endPoints[i],
+				endPoints[i + 1],
+				centroid.first,
+				centroid.second
 			);
 
-			angleSum += angle;
+
+			angleSum += signedAngle;
 		}
 
 		return angleSum / (beginPoints.length / 2);
@@ -149,19 +151,20 @@ public final class MathUtils {
 		return new Pair<Float, Float>(centroidX / points.size(), centroidY / points.size());
 	}
 
-	private static float getVectorDirectionOnCircle(
-		final float xSource,
-		final float ySource,
-		final float xDest,
-		final float yDest,
-		final Pair<Float, Float> circleCenter) {
+	private static float getOrientedSquare(
+		final float aX,
+		final float aY,
+		final float bX,
+		final float bY,
+		final float cX,
+		final float cY) {
 
-		if (circleCenter.second > yDest) {
+		final float a = aX - cX;
+		final float b = bX - cX;
+		final float c = aY - cY;
+		final float d = bY - cY;
 
-		} else {
-
-		}
-
+		return Math.copySign(1, a * d - b * c);
 	}
 
 	private MathUtils() {
