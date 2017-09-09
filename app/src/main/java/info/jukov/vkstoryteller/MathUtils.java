@@ -1,10 +1,10 @@
 package info.jukov.vkstoryteller;
 
 import android.graphics.Rect;
+import android.util.Log;
 import android.util.Pair;
-
 import java.util.Collection;
-import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * User: jukov
@@ -14,14 +14,110 @@ import java.util.List;
 
 public final class MathUtils {
 
-	private MathUtils() {
-	}
+
+	private static final String TAG = "MathUtils";
 
 	public static float getDistanceBetweenTwoPoints(final float x1, final float y1, final float x2, final float y2) {
 		final float catheter1 = Math.abs(x1 - x2);
 		final float catheter2 = Math.abs(y1 - y2);
 
 		return (float) Math.hypot(catheter1, catheter2);
+	}
+
+	public static float getScalarProduct(
+		final float x1Source,
+		final float y1Source,
+		final float x1Dest,
+		final float y1Dest,
+		final float x2Source,
+		final float y2Source,
+		final float x2Dest,
+		final float y2Dest) {
+
+		final float x1 = x1Dest - x1Source;
+		final float x2 = x2Dest - x2Source;
+		final float y1 = y1Dest - y1Source;
+		final float y2 = y2Dest - y2Source;
+		return x1*x2 + y1*y2;
+	}
+
+	public static float getAverageAngleBetweenPointsPairsAndCentroid(final float[] beginPoints, final float[] endPoints) {
+
+		final Pair<Float, Float> centroid = getCentroid(beginPoints);
+
+		float angleSum = 0;
+
+		for (int i = 0; i < beginPoints.length; i += 2) {
+			final float beginPointToCentroidLength = getDistanceBetweenTwoPoints(
+				beginPoints[i],
+				beginPoints[i + 1],
+				centroid.first,
+				centroid.second
+			);
+
+			final float scalarProduct = getScalarProduct(
+				centroid.first,
+				centroid.second,
+				beginPoints[i],
+				beginPoints[i + 1],
+				centroid.first,
+				centroid.second,
+				endPoints[i],
+				endPoints[i + 1]
+			);
+
+			final float vector1Length = getDistanceBetweenTwoPoints(
+				centroid.first,
+				centroid.second,
+				beginPoints[i],
+				beginPoints[i + 1]
+			);
+
+			final float vector2Length = getDistanceBetweenTwoPoints(
+				centroid.first,
+				centroid.second,
+				endPoints[i],
+				endPoints[i + 1]
+			);
+
+			final float cos = scalarProduct / (vector1Length * vector2Length);
+			final float angle = (float) Math.toDegrees(Math.acos(cos));
+
+			final float signedAngle = angle * getOrientedSquare(
+				beginPoints[i],
+				beginPoints[i + 1],
+				endPoints[i],
+				endPoints[i + 1],
+				centroid.first,
+				centroid.second
+			);
+
+
+			angleSum += signedAngle;
+		}
+
+		return angleSum / (beginPoints.length / 2);
+	}
+
+	public static float getAverageDistanceFromPointsToCentroid(final float[] points) {
+		if (points.length < 2) {
+			throw new IllegalStateException("Require at least 1 point for caclulate distance");
+		}
+
+		final Pair<Float, Float> centroid = getCentroid(points);
+
+		float distance = 0;
+
+		for (int i = 0; i < points.length; i += 2) {
+			distance += getDistanceBetweenTwoPoints(
+				points[i],
+				points[i + 1],
+				centroid.first,
+				centroid.second
+			);
+		}
+
+		return distance / (points.length / 2);
 	}
 
 	public static boolean isPointerInBounds(final Pair<Float, Float> pointerCoordinates, final Rect bounds) {
@@ -35,7 +131,7 @@ public final class MathUtils {
 
 		for (int i = 0; i < points.length; i += 2) {
 			centroidX += points[i];
-			centroidY += points[i+1];
+			centroidY += points[i + 1];
 		}
 
 		final int pointsCount = points.length / 2;
@@ -53,5 +149,24 @@ public final class MathUtils {
 		}
 
 		return new Pair<Float, Float>(centroidX / points.size(), centroidY / points.size());
+	}
+
+	private static float getOrientedSquare(
+		final float aX,
+		final float aY,
+		final float bX,
+		final float bY,
+		final float cX,
+		final float cY) {
+
+		final float a = aX - cX;
+		final float b = bX - cX;
+		final float c = aY - cY;
+		final float d = bY - cY;
+
+		return Math.copySign(1, a * d - b * c);
+	}
+
+	private MathUtils() {
 	}
 }

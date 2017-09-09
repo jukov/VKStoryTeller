@@ -16,8 +16,8 @@ public final class DragableImage {
 	private final int height;
 	private float x;
 	private float y;
-
-	private float scale;
+	private float scale = 1;
+	private float angle = 0;
 
 	public DragableImage(final Bitmap bitmap) {
 		this.bitmap = bitmap;
@@ -53,8 +53,28 @@ public final class DragableImage {
 		this.y = y;
 	}
 
-	public void addScale(final float scale) {
-		this.scale += scale;
+	public float getScale() {
+		return scale;
+	}
+
+	public void setScale(final float scale) {
+		this.scale = scale;
+	}
+
+	public float getAngle() {
+		return angle;
+	}
+
+	public void setAngle(final float angle) {
+		this.angle = angle;
+	}
+
+	public int getWidthCenter() {
+		return width / 2;
+	}
+
+	public int getHeightCenter() {
+		return height / 2;
 	}
 
 	public Rect getRect() {
