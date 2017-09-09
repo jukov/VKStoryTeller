@@ -1,8 +1,10 @@
 package info.jukov.vkstoryteller;
 
 import android.graphics.Rect;
+import android.util.Log;
 import android.util.Pair;
 import java.util.Collection;
+import java.util.StringTokenizer;
 
 /**
  * User: jukov
@@ -12,11 +14,31 @@ import java.util.Collection;
 
 public final class MathUtils {
 
+
+	private static final String TAG = "MathUtils";
+
 	public static float getDistanceBetweenTwoPoints(final float x1, final float y1, final float x2, final float y2) {
 		final float catheter1 = Math.abs(x1 - x2);
 		final float catheter2 = Math.abs(y1 - y2);
 
 		return (float) Math.hypot(catheter1, catheter2);
+	}
+
+	public static float getScalarProduct(
+		final float x1Source,
+		final float y1Source,
+		final float x1Dest,
+		final float y1Dest,
+		final float x2Source,
+		final float y2Source,
+		final float x2Dest,
+		final float y2Dest) {
+
+		final float x1 = x1Dest - x1Source;
+		final float x2 = x2Dest - x2Source;
+		final float y1 = y1Dest - y1Source;
+		final float y2 = y2Dest - y2Source;
+		return x1*x2 + y1*y2;
 	}
 
 	public static float getAverageAngleBetweenPointsPairsAndCentroid(final float[] beginPoints, final float[] endPoints) {
@@ -32,18 +54,44 @@ public final class MathUtils {
 				centroid.first,
 				centroid.second
 			);
-			final float pointsLength = getDistanceBetweenTwoPoints(
+
+			final float scalarProduct = getScalarProduct(
+				centroid.first,
+				centroid.second,
 				beginPoints[i],
 				beginPoints[i + 1],
+				centroid.first,
+				centroid.second,
 				endPoints[i],
 				endPoints[i + 1]
 			);
 
-			//Use arccos theerem for find angle
-			final float nominator = (float) (Math.pow(beginPointToCentroidLength, 2) * 2 + Math.pow(pointsLength, 2));
-			final float denominator = beginPointToCentroidLength * 4;
+			final float vector1Length = getDistanceBetweenTwoPoints(
+				centroid.first,
+				centroid.second,
+				beginPoints[i],
+				beginPoints[i + 1]
+			);
 
-			angleSum += (float) Math.acos(nominator / denominator);
+			final float vector2Length = getDistanceBetweenTwoPoints(
+				centroid.first,
+				centroid.second,
+				endPoints[i],
+				endPoints[i + 1]
+			);
+
+			final float cos = scalarProduct / (vector1Length * vector2Length);
+			final float angle = (float) Math.toDegrees(Math.acos(cos));
+
+			final float signedAngle = angle * getVectorDirectionOnCircle(
+				endPoints[i],
+				endPoints[i + 1],
+				beginPoints[i],
+				beginPoints[i + 1],
+				centroid
+			);
+
+			angleSum += angle;
 		}
 
 		return angleSum / (beginPoints.length / 2);
@@ -99,6 +147,21 @@ public final class MathUtils {
 		}
 
 		return new Pair<Float, Float>(centroidX / points.size(), centroidY / points.size());
+	}
+
+	private static float getVectorDirectionOnCircle(
+		final float xSource,
+		final float ySource,
+		final float xDest,
+		final float yDest,
+		final Pair<Float, Float> circleCenter) {
+
+		if (circleCenter.second > yDest) {
+
+		} else {
+
+		}
+
 	}
 
 	private MathUtils() {

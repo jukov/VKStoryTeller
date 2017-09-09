@@ -59,7 +59,7 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 		dragableImage.setY(256);
 
 		final Matrix matrix = new Matrix();
-		matrix.postTranslate(256 - dragableImage.getWidth() / 2, 256 - dragableImage.getHeight() / 2);
+		matrix.setTranslate(256 - dragableImage.getWidth() / 2, 256 - dragableImage.getHeight() / 2);
 		canvas.drawBitmap(dragableImage.getBitmap(), matrix, paint);
 		surfaceHolder.unlockCanvasAndPost(canvas);
 	}
@@ -106,21 +106,27 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 
 				//Scale
 				final float currentDistanceSumFromPointsToCentroid = MathUtils.getAverageDistanceFromPointsToCentroid(currentPointers);
-				final float distanceDiff = (previousDistanceSumFromPointsToCentroid - currentDistanceSumFromPointsToCentroid) / 300;
+				final float distanceDiff = (previousDistanceSumFromPointsToCentroid - currentDistanceSumFromPointsToCentroid) / 600;
 				final float newScale = dragableImage.getScale() - distanceDiff;
 
 				//Rotate
 				final float averageAngle = MathUtils.getAverageAngleBetweenPointsPairsAndCentroid(currentPointers, previousPointers);
-				final float newAngle = dragableImage.getAngle() + averageAngle;
 
-				Log.i(TAG, "handleMessage: " + averageAngle);
+				float newAngle = dragableImage.getAngle();
+
+				if (!Float.isNaN(averageAngle)) {
+					newAngle += averageAngle;
+				}
+
+//				Log.i(TAG, "handleMessage: " + averageAngle);
 
 				previousCentroid = currentCentroid;
 				previousDistanceSumFromPointsToCentroid = currentDistanceSumFromPointsToCentroid;
 				previousPointers = currentPointers;
 
-				matrix.preRotate(newAngle);
 				matrix.setScale(newScale, newScale);
+				matrix.preRotate(newAngle, (dragableImage.getWidthCenter() * dragableImage.getScale()),
+					(dragableImage.getHeightCenter() * dragableImage.getScale()));
 				matrix.postTranslate(newX - (dragableImage.getWidthCenter() * dragableImage.getScale()),
 					newY - (dragableImage.getHeightCenter() * dragableImage.getScale()));
 
