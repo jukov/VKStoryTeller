@@ -16,7 +16,7 @@ data class DragableImage(
 
     val width = bitmap.width;
     val height = bitmap.height;
-    val widthCenter = bitmap.width / 2;
-    val heightCenter = bitmap.height / 2;
+    val widthCenter = bitmap.width / 2.0f;
+    val heightCenter = bitmap.height / 2.0f;
 
 }

@@ -20,19 +20,19 @@ import java.util.*
 private const val RENDER_THREAD_NAME = "RenderThread"
 private const val TAG = "RenderThread"
 
-private const val MESSAGE_NEW_DRAGABLE = 2110
+private const val MESSAGE_NEW_DRAGABLE = 2109
+private const val MESSAGE_REDRAW_DRAGABLE = 2110
 private const val MESSAGE_POINTER_MOVE = 2111
 private const val MESSAGE_POINTER_COUNT_CHANGE = 2112
 
-private const val KEY_POINTER_COUNT = "KEY_POINTER_COUNT"
-private const val KEY_POINTER = "KEY_POINTER"
-private const val KEY_X = "KEY_X"
-private const val KEY_Y = "KEY_Y"
 private const val KEY_POINTERS = "KEY_POINTERS"
+
+private const val SCALE_TRESHOLD_MIN = 0.3f
+private const val SCALE_TRESHOLD_MAX = 2.0f
 
 internal class RenderThread(private val surfaceHolder: SurfaceHolder) : HandlerThread(RENDER_THREAD_NAME), Handler.Callback {
 
-    private val FIRST_POINTER_ID = 0
+    var onStickerMoveListener : OnStickerMoveListner? = null
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val matrix = Matrix()
@@ -71,6 +71,11 @@ internal class RenderThread(private val surfaceHolder: SurfaceHolder) : HandlerT
                         drawStickers(
                                 surfaceHolder.lockCanvas()))
             }
+            MESSAGE_REDRAW_DRAGABLE -> {
+                surfaceHolder.unlockCanvasAndPost(
+                        drawStickers(
+                                surfaceHolder.lockCanvas()))
+            }
             MESSAGE_POINTER_MOVE -> {
                 if (stickerList.size == 0) {
                     return true
@@ -98,14 +103,16 @@ internal class RenderThread(private val surfaceHolder: SurfaceHolder) : HandlerT
                 //Calc scale
                 val currentDistanceSumFromPointsToCentroid = getAverageDistanceFromPointsToCentroid(currentPointers)
                 val distanceDiff = (previousDistanceSumFromPointsToCentroid!! - currentDistanceSumFromPointsToCentroid) / 600
-                val newScale = currentSticker.scale - distanceDiff
+                var newScale = currentSticker.scale - distanceDiff
+                newScale = Math.max(SCALE_TRESHOLD_MIN, newScale)
+                newScale = Math.min(SCALE_TRESHOLD_MAX, newScale)
 
                 //Calc rotate
                 val averageAngle = getAverageAngleBetweenPointsPairsAndCentroid(previousPointers!!, currentPointers)
 
                 var newAngle = currentSticker.angle
 
-                if (!java.lang.Float.isNaN(averageAngle)) {
+                if (!averageAngle.equals(Float.NaN)) {
                     newAngle += (averageAngle * 1.5).toFloat()
                 }
 
@@ -124,12 +131,18 @@ internal class RenderThread(private val surfaceHolder: SurfaceHolder) : HandlerT
                 surfaceHolder.unlockCanvasAndPost(
                         drawStickers(
                                 surfaceHolder.lockCanvas()))
+
+                if (currentCentroid.size == 2) {
+                    onStickerMoveListener?.onStickerMoveByOnePointer(currentPointers)
+                }
             }
             MESSAGE_POINTER_COUNT_CHANGE -> {
                 previousCentroid = null
                 previousDistanceSumFromPointsToCentroid = null
                 previousPointers = null
                 currentSticker = null
+
+                onStickerMoveListener?.onStickerStopMove()
             }
             else -> {
             }
@@ -152,14 +165,17 @@ internal class RenderThread(private val surfaceHolder: SurfaceHolder) : HandlerT
     }
 
     fun onPointerCountChangeEvent() {
-        val message = handler!!.obtainMessage(MESSAGE_POINTER_COUNT_CHANGE)
-        handler!!.sendMessage(message)
+        handler!!.sendEmptyMessage(MESSAGE_POINTER_COUNT_CHANGE)
     }
 
     fun onAddNewStickerEvent(sticker: DragableImage) {
         stickerList.add(sticker);
-        val message = handler!!.obtainMessage(MESSAGE_NEW_DRAGABLE)
-        handler!!.sendMessage(message)
+        handler!!.sendEmptyMessage(MESSAGE_NEW_DRAGABLE)
+    }
+
+    fun deleteCurrentSticker() {
+        stickerList.removeAt(stickerList.size - 1)//TODO Способ удаления побезопаснее
+        handler!!.sendEmptyMessage(MESSAGE_REDRAW_DRAGABLE)
     }
 
     private fun drawStickers(canvas: Canvas) : Canvas {
@@ -167,12 +183,17 @@ internal class RenderThread(private val surfaceHolder: SurfaceHolder) : HandlerT
 
         stickerList.forEach {
             matrix.setScale(it.scale, it.scale)
-            matrix.preRotate(it.angle, it.widthCenter * it.scale, it.heightCenter * it.scale)
+            matrix.preRotate(it.angle, it.widthCenter, it.heightCenter)
             matrix.postTranslate(it.x - it.widthCenter * it.scale, it.y - it.heightCenter * it.scale)
 
             canvas.drawBitmap(it.bitmap, matrix, paint)
         }
 
         return canvas
+    }
+
+    interface OnStickerMoveListner {
+        fun onStickerMoveByOnePointer(pointer: FloatArray)
+        fun onStickerStopMove()
     }
 }

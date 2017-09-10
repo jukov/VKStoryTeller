@@ -17,4 +17,9 @@
 
 	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+	<style name="FadDeleteStyle">
+		<item name="backgroundTint">@color/fabDeleteColor</item>
+		<item name="srcCompat">@drawable/ic_fab_trash</item>
+	</style>
+	
 </resources>
