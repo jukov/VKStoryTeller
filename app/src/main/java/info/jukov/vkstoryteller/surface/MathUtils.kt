@@ -49,6 +49,35 @@ fun getCentroid(points: FloatArray): FloatArray {
     return floatArrayOf(centroidX / pointsCount, centroidY / pointsCount)
 }
 
+fun getMostCloseSticker(pointers: FloatArray, stickerList: List<DragableImage>) : DragableImage {
+    require(stickerList.size > 0)
+    require(pointers.size >= 2, { "Require at least 1 pointer for caclulate distance" })
+    require(pointers.size.rem(2) == 0, { "Arrays must be contain pairs of coordinates of pointers" })
+
+    var mostClosedSticker: DragableImage? = null//TODO
+    var bestPointersToCenterLengthSum = Float.MAX_VALUE
+
+    stickerList.forEach {
+
+        val stickerCenter = floatArrayOf(it.x, it.y)
+
+        var pointersToCenterLengthSum = 0.0f
+
+        for (i in 0..pointers.size - 1 step 2) {
+            pointersToCenterLengthSum += getDistanceBetweenTwoPoints(stickerCenter, floatArrayOf(pointers[i], pointers[i + 1]))
+        }
+
+        if (pointersToCenterLengthSum < bestPointersToCenterLengthSum) {
+            mostClosedSticker = it
+            bestPointersToCenterLengthSum = pointersToCenterLengthSum
+        }
+    }
+
+    requireNotNull(mostClosedSticker)
+
+    return mostClosedSticker!!
+}
+
 /**
  * @return среднее расстояние до центроида для переданных координат вершин многоугольника.
  * */

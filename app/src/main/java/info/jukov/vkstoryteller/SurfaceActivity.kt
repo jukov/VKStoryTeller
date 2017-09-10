@@ -15,15 +15,13 @@ class SurfaceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.screen_main)
 
-        val dragableImage: DragableImage
+        val bitmap = BitmapFactory.decodeStream(assets.open(STICKER))
 
-        try {
-            dragableImage = DragableImage(BitmapFactory.decodeStream(assets.open(STICKER)))
-        } catch (e: IOException) {
-            throw IllegalStateException()
+        val surfaceManager = SurfaceManager(surfaceView)
+
+        buttonAddSticker.setOnClickListener {
+            surfaceManager.addDragableImage(DragableImage(bitmap))
         }
-
-        val surfaceManager = SurfaceManager(surfaceView, dragableImage)
     }
 
     companion object {

@@ -23,7 +23,7 @@ public class SurfaceManager {
 
 	private RenderThread renderThread;
 
-	public SurfaceManager(final SurfaceView surfaceView, final DragableImage dragableImage) {
+	public SurfaceManager(final SurfaceView surfaceView) {
 		this.surfaceView = new WeakReference<SurfaceView>(surfaceView);
 
 		surfaceView.setOnTouchListener(new OnTouchListener() {
@@ -55,7 +55,7 @@ public class SurfaceManager {
 					case MotionEvent.ACTION_POINTER_DOWN:
 					case MotionEvent.ACTION_POINTER_UP:
 					case MotionEvent.ACTION_UP:
-						renderThread.onPointerCountChangeEvent(event.getActionIndex());
+						renderThread.onPointerCountChangeEvent();
 					default:
 						break;
 				}
@@ -67,7 +67,7 @@ public class SurfaceManager {
 		surfaceView.getHolder().addCallback(new Callback() {
 			@Override
 			public void surfaceCreated(final SurfaceHolder holder) {
-				renderThread = new RenderThread(holder, dragableImage);
+				renderThread = new RenderThread(holder);
 				renderThread.start();
 			}
 
@@ -84,8 +84,9 @@ public class SurfaceManager {
 		});
 	}
 
-	public void addDragableImage() {
 
+	public void addDragableImage(final DragableImage dragableImage) {
+		renderThread.onAddNewStickerEvent(dragableImage);
 	}
 
 }
