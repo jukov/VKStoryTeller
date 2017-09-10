@@ -1,5 +1,9 @@
 package info.jukov.vkstoryteller.surface;
 
+import static info.jukov.vkstoryteller.surface.MathUtilsKt.getAverageAngleBetweenPointsPairsAndCentroid;
+import static info.jukov.vkstoryteller.surface.MathUtilsKt.getAverageDistanceFromPointsToCentroid;
+import static info.jukov.vkstoryteller.surface.MathUtilsKt.getCentroid;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -8,10 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.util.Log;
-import android.util.Pair;
 import android.view.SurfaceHolder;
-import info.jukov.vkstoryteller.MathUtils;
 
 /**
  * User: jukov
@@ -27,7 +28,6 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 	private static final int MESSAGE_POINTER_MOVE = 2111;
 	private static final int MESSAGE_POINTER_UP = 2112;
 
-	private static final String KEY_POINTER_ID = "KEY_POINTER_ID";
 	private static final String KEY_POINTER_COUNT = "KEY_POINTER_COUNT";
 	private static final String KEY_POINTER = "KEY_POINTER";
 	private static final String KEY_X = "KEY_X";
@@ -41,7 +41,7 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 	private Handler handler;
 	private DragableImage dragableImage;
 
-	private Pair<Float, Float> previousCentroid;
+	private float[] previousCentroid;
 	private Float previousDistanceSumFromPointsToCentroid;
 	private float[] previousPointers;
 
@@ -90,8 +90,8 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 				}
 
 				if (previousCentroid == null) {//TODO нормальное условие
-					previousCentroid = MathUtils.getCentroid(currentPointers);
-					previousDistanceSumFromPointsToCentroid = MathUtils.getAverageDistanceFromPointsToCentroid(currentPointers);
+					previousCentroid = getCentroid(currentPointers);
+					previousDistanceSumFromPointsToCentroid = getAverageDistanceFromPointsToCentroid(currentPointers);
 					previousPointers = currentPointers;
 					return true;
 				}
@@ -99,26 +99,24 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 				final Matrix matrix = new Matrix();
 
 				//Translate
-				final Pair<Float, Float> currentCentroid = MathUtils.getCentroid(currentPointers);
+				final float[] currentCentroid = getCentroid(currentPointers);
 
-				final float newX = dragableImage.getX() - (previousCentroid.first - currentCentroid.first);
-				final float newY = dragableImage.getY() - (previousCentroid.second - currentCentroid.second);
+				final float newX = dragableImage.getX() - (previousCentroid[0] - currentCentroid[0]);
+				final float newY = dragableImage.getY() - (previousCentroid[1] - currentCentroid[1]);
 
 				//Scale
-				final float currentDistanceSumFromPointsToCentroid = MathUtils.getAverageDistanceFromPointsToCentroid(currentPointers);
+				final float currentDistanceSumFromPointsToCentroid = getAverageDistanceFromPointsToCentroid(currentPointers);
 				final float distanceDiff = (previousDistanceSumFromPointsToCentroid - currentDistanceSumFromPointsToCentroid) / 600;
 				final float newScale = dragableImage.getScale() - distanceDiff;
 
 				//Rotate
-				final float averageAngle = MathUtils.getAverageAngleBetweenPointsPairsAndCentroid(previousPointers, currentPointers);
+				final float averageAngle = getAverageAngleBetweenPointsPairsAndCentroid(previousPointers, currentPointers);
 
 				float newAngle = dragableImage.getAngle();
 
 				if (!Float.isNaN(averageAngle)) {
 					newAngle += (averageAngle * 1.5);
 				}
-
-//				Log.i(TAG, "handleMessage: " + averageAngle);
 
 				previousCentroid = currentCentroid;
 				previousDistanceSumFromPointsToCentroid = currentDistanceSumFromPointsToCentroid;
@@ -142,7 +140,6 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 
 				break;
 			case MESSAGE_POINTER_UP:
-//				pointerId = message.getData().getInt(KEY_POINTER_ID);
 				previousCentroid = null;
 				previousDistanceSumFromPointsToCentroid = null;
 				previousPointers = null;
@@ -157,17 +154,6 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 
 	}
 
-	public void onPointerMoveEvent(final float x, final float y, final int pointerId) {
-		final Bundle bundle = new Bundle();
-		bundle.putInt(KEY_POINTER_ID, pointerId);
-		bundle.putFloat(KEY_X, x);
-		bundle.putFloat(KEY_Y, y);
-
-		final Message message = handler.obtainMessage(MESSAGE_POINTER_MOVE);
-		message.setData(bundle);
-		handler.sendMessage(message);
-	}
-
 	public void onPointerMoveEvent(final float[] pointers) {
 		final Bundle bundle = new Bundle();
 		bundle.putFloatArray(KEY_POINTERS, pointers);
@@ -177,9 +163,8 @@ class RenderThread extends HandlerThread implements Handler.Callback {
 		handler.sendMessage(message);
 	}
 
-	public void onPointerUpEvent(final int pointerId) {
+	public void onPointerCountChangeEvent(final int pointerId) {
 		final Bundle bundle = new Bundle();
-		bundle.putInt(KEY_POINTER_ID, pointerId);
 
 		final Message message = handler.obtainMessage(MESSAGE_POINTER_UP);
 		message.setData(bundle);

@@ -55,7 +55,7 @@ public class SurfaceManager {
 					case MotionEvent.ACTION_POINTER_DOWN:
 					case MotionEvent.ACTION_POINTER_UP:
 					case MotionEvent.ACTION_UP:
-						renderThread.onPointerUpEvent(event.getActionIndex());
+						renderThread.onPointerCountChangeEvent(event.getActionIndex());
 					default:
 						break;
 				}
