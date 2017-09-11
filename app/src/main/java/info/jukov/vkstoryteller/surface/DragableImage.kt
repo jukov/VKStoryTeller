@@ -12,7 +12,8 @@ data class DragableImage(
         var x: Float = 0.0f,
         var y: Float = 0.0f,
         var scale: Float = 1.0f,
-        var angle: Float = 0.0f) {
+        var angle: Float = 0.0f,
+        var alpha: Int = 255) {
 
     val width = bitmap.width;
     val height = bitmap.height;

@@ -6,14 +6,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.support.constraint.ConstraintLayout
-import android.support.design.widget.FloatingActionButton
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
-import android.util.Log
-import android.view.MotionEvent
-import android.view.SurfaceHolder
 import android.view.View
-import android.view.animation.AnimationUtils
 import info.jukov.vkstoryteller.R
 import kotlinx.android.synthetic.main.view_create_post.view.*
 
@@ -39,15 +33,7 @@ class CreatePostView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : ConstraintLayout(context, attrs, defStyleAttr), Handler.Callback {
 
-    private enum class FabState {
-        HIDDEN,
-        VISIBLE,
-        SELECTED
-    }
-
     private var uiThreadHandler = Handler(this)
-
-    @Volatile private var fabState = FabState.HIDDEN
 
     private val fabRect = Rect(0, 0, 0, 0)
 
@@ -57,7 +43,7 @@ class CreatePostView @JvmOverloads constructor(
         postEditView.onStickerMoveListener = object : PostEditView.OnStickerMoveListner {
 
             override fun onStickerMoveByOnePointer(pointer: FloatArray) {
-                if (fabState != FabState.HIDDEN) {
+                if (fabDelete.state != DeleteFloatingActionButton.State.HIDDEN) {
                     val bundle = Bundle()
                     bundle.putFloatArray(KEY_POINTER, pointer)
                     val message = uiThreadHandler.obtainMessage(MESSAGE_POINTER_MOVE)
@@ -71,13 +57,15 @@ class CreatePostView @JvmOverloads constructor(
 
             override fun onStickerStopMove() {
                 uiThreadHandler.removeMessages(MESSAGE_SHOW_FAB)
-                when (fabState) {
-                    FabState.VISIBLE -> uiThreadHandler.sendEmptyMessage(MESSAGE_HIDE_FAB)
-                    FabState.SELECTED -> {
+                when (fabDelete.state) {
+                    DeleteFloatingActionButton.State.VISIBLE ->
+                        uiThreadHandler.sendEmptyMessage(MESSAGE_HIDE_FAB)
+                    DeleteFloatingActionButton.State.SELECTED -> {
                         uiThreadHandler.sendEmptyMessage(MESSAGE_HIDE_FAB)
                         postEditView.deleteCurrentSticker()
                     }
-                    FabState.HIDDEN -> {}
+                    DeleteFloatingActionButton.State.HIDDEN -> {
+                    }
                 }
             }
         }
@@ -91,16 +79,10 @@ class CreatePostView @JvmOverloads constructor(
         if (msg != null) {
             when (msg.what) {
                 MESSAGE_SHOW_FAB -> {
-                    val animation = AnimationUtils.loadAnimation(context, R.anim.appear_from_bottom)
-                    fabDelete.startAnimation(animation)
-                    fabDelete.visibility = View.VISIBLE
-                    fabState = FabState.VISIBLE
+                    fabDelete.show()
                 }
                 MESSAGE_HIDE_FAB -> {
-                    val animation = AnimationUtils.loadAnimation(context, R.anim.disappear_to_bottom)
-                    fabDelete.startAnimation(animation)
-                    fabDelete.visibility = View.GONE
-                    fabState = FabState.HIDDEN
+                    fabDelete.hide()
                 }
                 MESSAGE_POINTER_MOVE -> {
                     if (fabRect.isEmpty) {//TODO придумать способ получще для вытаскивания rect
@@ -115,20 +97,11 @@ class CreatePostView @JvmOverloads constructor(
 
                     val pointer = msg.data.getFloatArray(KEY_POINTER)
 
-                    val layoutParams = fabDelete.layoutParams
-
                     if (fabRect.contains(pointer[0].toInt(), pointer[1].toInt())) {
-                        layoutParams.width = context.resources.getDimensionPixelSize(R.dimen.fabSurfaceViewSelectedSize)
-                        layoutParams.height = context.resources.getDimensionPixelSize(R.dimen.fabSurfaceViewSelectedSize)
-                        fabDelete.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_fab_trash_released))
-                        fabState = FabState.SELECTED
+                        fabDelete.select()
                     } else {
-                        layoutParams.width = context.resources.getDimensionPixelSize(R.dimen.fabSurfaceViewDefaultSize)
-                        layoutParams.height = context.resources.getDimensionPixelSize(R.dimen.fabSurfaceViewDefaultSize)
-                        fabDelete.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_fab_trash))
-                        fabState = FabState.VISIBLE
+                        fabDelete.deselect()
                     }
-                    fabDelete.requestLayout()
                 }
             }
         }

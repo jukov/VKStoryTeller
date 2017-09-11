@@ -5,10 +5,12 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
+import android.os.Handler
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import info.jukov.vkstoryteller.util.moveToEnd
+import java.util.concurrent.TimeUnit
 
 /**
  * User: jukov
@@ -18,6 +20,11 @@ import info.jukov.vkstoryteller.util.moveToEnd
 
 private const val SCALE_TRESHOLD_MIN = 0.3f
 private const val SCALE_TRESHOLD_MAX = 2.0f//TODO to res?
+
+
+private const val DELETE_STICKER_ALPHA_FOR_ITERATION = 256 / 10
+private const val DELETE_STICKER_SCALE_START = 0.02f
+private const val DELETE_STICKER_SCALE_MULTIPLER_FOR_ITERATION = 2
 
 class PostEditView @JvmOverloads constructor(
         context: Context,
@@ -74,7 +81,42 @@ class PostEditView @JvmOverloads constructor(
     }
 
     fun deleteCurrentSticker() {
-        stickerList.remove(currentSticker)
+        deleteStickerWithAnimation()
+    }
+
+    private fun deleteStickerWithAnimation() {
+
+        val nonNullSticker = currentSticker!!
+
+        val MESSAGE_ANIMATE_STICKER = 2053
+        val MESSAGE_DELETE_STICKER = 2054
+
+        var scalePerFrame = DELETE_STICKER_SCALE_START
+
+        val deleteHandler = Handler(Handler.Callback {//TODO refactor?
+            if (it == null) {
+                return@Callback true
+            }
+
+            if (it.what == MESSAGE_ANIMATE_STICKER) {
+                nonNullSticker.alpha -= DELETE_STICKER_ALPHA_FOR_ITERATION
+                nonNullSticker.scale = Math.max(nonNullSticker.scale - scalePerFrame, 0f)
+
+                scalePerFrame *= DELETE_STICKER_SCALE_MULTIPLER_FOR_ITERATION
+
+                invalidate()
+            } else if (it.what == MESSAGE_DELETE_STICKER) {
+                stickerList.remove(nonNullSticker)
+                invalidate()
+            }
+
+            true
+        })
+
+        for (i in 0..10 * 16 step 16) {
+            deleteHandler.sendEmptyMessageDelayed(MESSAGE_ANIMATE_STICKER, i.toLong())
+        }
+        deleteHandler.sendEmptyMessageDelayed(MESSAGE_DELETE_STICKER, 10*16);
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -89,8 +131,12 @@ class PostEditView @JvmOverloads constructor(
             stickerMatrix.preRotate(it.angle, it.widthCenter, it.heightCenter)
             stickerMatrix.postTranslate(it.x - it.widthCenter * it.scale, it.y - it.heightCenter * it.scale)
 
+            paint.alpha = it.alpha
+
             canvas.drawBitmap(it.bitmap, stickerMatrix, paint)
         }
+
+        paint.alpha = 255
     }
 
     private fun onRedrawNeeded() {
