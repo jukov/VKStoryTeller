@@ -45,8 +45,6 @@ class CreatePostView @JvmOverloads constructor(
         SELECTED
     }
 
-    private var renderThread: RenderThread? = null
-
     private var uiThreadHandler = Handler(this)
 
     @Volatile private var fabState = FabState.HIDDEN
@@ -56,49 +54,37 @@ class CreatePostView @JvmOverloads constructor(
     init {
         View.inflate(context, R.layout.view_create_post, this)
 
-        surfaceView.setOnTouchListener { _, event ->
-            when (event.actionMasked) {
-                MotionEvent.ACTION_MOVE -> {
+        postEditView.onStickerMoveListener = object : PostEditView.OnStickerMoveListner {
 
-                    val pointers = FloatArray(event.pointerCount * 2)
+            override fun onStickerMoveByOnePointer(pointer: FloatArray) {
+                if (fabState != FabState.HIDDEN) {
+                    val bundle = Bundle()
+                    bundle.putFloatArray(KEY_POINTER, pointer)
+                    val message = uiThreadHandler.obtainMessage(MESSAGE_POINTER_MOVE)
+                    message.data = bundle
+                    uiThreadHandler.sendMessage(message)
 
-                    for (i in 0..event.pointerCount - 1) {
-                        pointers[i * 2] = event.getX(i)
-                        pointers[i * 2 + 1] = event.getY(i)
+                } else {
+                    uiThreadHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_FAB, SHOW_FAB_DELAY)
+                }
+            }
+
+            override fun onStickerStopMove() {
+                uiThreadHandler.removeMessages(MESSAGE_SHOW_FAB)
+                when (fabState) {
+                    FabState.VISIBLE -> uiThreadHandler.sendEmptyMessage(MESSAGE_HIDE_FAB)
+                    FabState.SELECTED -> {
+                        uiThreadHandler.sendEmptyMessage(MESSAGE_HIDE_FAB)
+                        postEditView.deleteCurrentSticker()
                     }
-
-                    renderThread!!.onPointerMoveEvent(pointers)
-                }
-                MotionEvent.ACTION_DOWN,
-                MotionEvent.ACTION_POINTER_DOWN,
-                MotionEvent.ACTION_POINTER_UP,
-                MotionEvent.ACTION_UP -> renderThread!!.onPointerCountChangeEvent()
-                else -> {
+                    FabState.HIDDEN -> {}
                 }
             }
-
-            true
         }
-
-        surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceCreated(holder: SurfaceHolder) {
-                initRenderThread(holder)
-            }
-
-            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-                renderThread!!.updateSize(width, height)
-            }
-
-            override fun surfaceDestroyed(holder: SurfaceHolder) {
-                renderThread!!.quit()
-                renderThread = null
-            }
-        })
-
     }
 
     public fun addSticker(dragableImage: DragableImage) {
-        requireNotNull(renderThread, { "RenderThread not initialized yet" }).onAddNewStickerEvent(dragableImage)
+        postEditView.addSticker(dragableImage)
     }
 
     override fun handleMessage(msg: Message?): Boolean {
@@ -148,39 +134,6 @@ class CreatePostView @JvmOverloads constructor(
         }
 
         return true
-    }
-
-    private fun initRenderThread(holder: SurfaceHolder) {
-        renderThread = RenderThread(holder)
-        renderThread!!.start()
-
-        renderThread!!.onStickerMoveListener = object : RenderThread.OnStickerMoveListner {
-
-            override fun onStickerMoveByOnePointer(pointer: FloatArray) {
-                if (fabState != FabState.HIDDEN) {
-                    val bundle = Bundle()
-                    bundle.putFloatArray(KEY_POINTER, pointer)
-                    val message = uiThreadHandler.obtainMessage(MESSAGE_POINTER_MOVE)
-                    message.data = bundle
-                    uiThreadHandler.sendMessage(message)
-
-                } else {
-                    uiThreadHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_FAB, SHOW_FAB_DELAY)
-                }
-            }
-
-            override fun onStickerStopMove() {
-                uiThreadHandler.removeMessages(MESSAGE_SHOW_FAB)
-                when (fabState) {
-                    FabState.VISIBLE -> uiThreadHandler.sendEmptyMessage(MESSAGE_HIDE_FAB)
-                    FabState.SELECTED -> {
-                        uiThreadHandler.sendEmptyMessage(MESSAGE_HIDE_FAB)
-                        renderThread!!.deleteCurrentSticker()
-                    }
-                    FabState.HIDDEN -> {}
-                }
-            }
-        }
     }
 
     private fun setRectToFab(containerLeft: Int,

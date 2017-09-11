@@ -5,8 +5,17 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<SurfaceView
-		android:id="@+id/surfaceView"
+	<!--<SurfaceView-->
+		<!--android:id="@+id/surfaceView"-->
+		<!--android:layout_width="0dp"-->
+		<!--android:layout_height="0dp"-->
+		<!--app:layout_constraintBottom_toBottomOf="parent"-->
+		<!--app:layout_constraintLeft_toLeftOf="parent"-->
+		<!--app:layout_constraintRight_toRightOf="parent"-->
+		<!--app:layout_constraintTop_toTopOf="parent"/>-->
+
+	<info.jukov.vkstoryteller.surface.PostEditView
+		android:id="@+id/postEditView"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		app:layout_constraintBottom_toBottomOf="parent"
@@ -20,9 +29,9 @@
 		android:id="@+id/fabContainer"
 		android:layout_width="80dp"
 		android:layout_height="80dp"
-		app:layout_constraintBottom_toBottomOf="@id/surfaceView"
-		app:layout_constraintLeft_toLeftOf="@+id/surfaceView"
-		app:layout_constraintRight_toRightOf="@+id/surfaceView">
+		app:layout_constraintBottom_toBottomOf="@+id/postEditView"
+		app:layout_constraintLeft_toLeftOf="@+id/postEditView"
+		app:layout_constraintRight_toRightOf="@+id/postEditView">
 
 		<android.support.design.widget.FloatingActionButton
 			android:id="@+id/fabDelete"
