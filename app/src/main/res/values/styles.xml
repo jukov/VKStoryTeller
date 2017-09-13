@@ -17,9 +17,19 @@
 
 	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-	<style name="FadDeleteStyle">
+	<style name="FabDelete">
 		<item name="backgroundTint">@color/fabDeleteColor</item>
 		<item name="srcCompat">@drawable/ic_fab_trash</item>
+	</style>
+
+	<style name="EditTextMessage">
+		<item name="android:textSize">@dimen/messageTextSize</item>
+		<item name="android:textColor">@color/messageTextColor</item>
+		<item name="android:textColorHint">@color/messageTextColor</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:gravity">center</item>
+		<item name="android:hint">@string/message_hint</item>
+		<item name="android:background">@android:color/transparent</item>
 	</style>
 	
 </resources>

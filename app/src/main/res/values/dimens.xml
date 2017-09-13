@@ -1,7 +1,10 @@
 <resources>
-	<dimen name="fab_margin">16dp</dimen>
 
-	<dimen name="fabSurfaceViewPadding">12dp</dimen>
+	<dimen name="editTextMessageMargin">16dp</dimen>
+
 	<dimen name="fabSurfaceViewDefaultSize">48dp</dimen>
 	<dimen name="fabSurfaceViewSelectedSize">56dp</dimen>
+
+	<dimen name="messageTextSize">24sp</dimen>
+
 </resources>

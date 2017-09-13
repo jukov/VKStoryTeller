@@ -6,9 +6,15 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.support.constraint.ConstraintLayout
+import android.text.Editable
+import android.text.Spannable
+import android.text.TextWatcher
+import android.text.style.BackgroundColorSpan
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import info.jukov.vkstoryteller.R
+import info.jukov.vkstoryteller.util.BackgroundAroundLetterSpan
 import kotlinx.android.synthetic.main.view_create_post.view.*
 
 
@@ -69,6 +75,8 @@ class CreatePostView @JvmOverloads constructor(
                 }
             }
         }
+
+        editTextMessage.text.setSpan(BackgroundAroundLetterSpan(), 0, editTextMessage.text.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
     }
 
     public fun addSticker(dragableImage: DragableImage) {

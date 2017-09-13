@@ -1,4 +1,7 @@
 <resources>
 	<string name="app_name">VKStoryTeller</string>
 	<string name="title_activity_surface">SurfaceActivity</string>
+
+
+	<string name="message_hint">Что у вас нового?</string>
 </resources>
