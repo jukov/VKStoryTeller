@@ -49,7 +49,7 @@ class CustomCursorEditText : EditText {
     }
 
     private fun drawCursor(canvas: Canvas) {
-        var cursorX = layout.getPrimaryHorizontal(selectionStart)
+        var cursorX = layout.getPrimaryHorizontal(selectionStart) + paddingLeft
 
         if (cursorX < STROKE / 2) {
             cursorX = STROKE / 2f

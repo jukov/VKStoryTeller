@@ -54,6 +54,8 @@ class BackgroundAroundLetterSpan : LineBackgroundSpan {
 
         if (!isFirstLine) {
 
+            paint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.DST))
+
             if (currentRect.width() > previousRect.width() + EDGE_DIAMETER + EDGE_OFFSET) {
 
                 canvas.drawBitmap(
@@ -107,7 +109,8 @@ class BackgroundAroundLetterSpan : LineBackgroundSpan {
     private fun createEdge(width: Int, squareLeft: Int, squareTop: Int): Bitmap {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-        val circleBitmap = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888)
+        val circleBitmap = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888)//TODO optimize configs
+        circleBitmap.setHasAlpha(true)
         val circleCanvas = Canvas(circleBitmap);
 
         paint.color = Color.RED
@@ -117,6 +120,7 @@ class BackgroundAroundLetterSpan : LineBackgroundSpan {
         circleCanvas.drawOval(circleRect, paint)
 
         val squareBitmap = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888)
+        squareBitmap.setHasAlpha(true)
         val squareCanvas = Canvas(squareBitmap);
 
         paint.color = Color.WHITE
@@ -127,6 +131,7 @@ class BackgroundAroundLetterSpan : LineBackgroundSpan {
         squareCanvas.drawRect(squareRect, paint)
 
         val resultBitmap = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888)
+        resultBitmap.setHasAlpha(true)
         val resultCanvas = Canvas(resultBitmap);
 
         resultCanvas.drawBitmap(circleBitmap, 0f, 0f, paint)
