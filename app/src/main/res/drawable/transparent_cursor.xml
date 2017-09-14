@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Установка этого Drawable в качестве курсора,
+	 EditText продолжает генерировать Handler сообщения для мерцания курсора.
+	 При установке @null или @android:color/transparent такого эффекта не будет -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+	android:shape="rectangle">
+
+	<size
+		android:width="1px"
+		android:height="1px"/>
+
+	<solid android:color="@android:color/transparent"/>
+
+</shape>
