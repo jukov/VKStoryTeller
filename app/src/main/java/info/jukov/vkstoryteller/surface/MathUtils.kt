@@ -35,6 +35,7 @@ fun getScalarProduct(vector1: FloatArray, vector2: FloatArray): Float {
  * для переданных координат вершин многоугольника.
  * */
 fun getCentroid(points: FloatArray): FloatArray {
+    require(points.size >= 2, { "Require at least 1 point for caclulate centroid" })
     require(points.size.rem(2) == 0, { "Array must be contain pairs of coordinates of points" })
 
     var centroidX = 0f
@@ -49,12 +50,12 @@ fun getCentroid(points: FloatArray): FloatArray {
     return floatArrayOf(centroidX / pointsCount, centroidY / pointsCount)
 }
 
-fun getMostCloseSticker(pointers: FloatArray, stickerList: List<DragableImage>) : DragableImage {
+fun getMostCloseSticker(pointers: FloatArray, stickerList: List<DragableImage>): DragableImage {
     require(stickerList.size > 0)
     require(pointers.size >= 2, { "Require at least 1 pointer for caclulate distance" })
     require(pointers.size.rem(2) == 0, { "Arrays must be contain pairs of coordinates of pointers" })
 
-    var mostClosedSticker: DragableImage? = null//TODO
+    var mostClosedSticker: DragableImage = stickerList.get(0)
     var bestPointersToCenterLengthSum = Float.MAX_VALUE
 
     stickerList.forEach {
@@ -73,9 +74,7 @@ fun getMostCloseSticker(pointers: FloatArray, stickerList: List<DragableImage>) 
         }
     }
 
-    requireNotNull(mostClosedSticker)
-
-    return mostClosedSticker!!
+    return mostClosedSticker
 }
 
 /**
@@ -107,7 +106,7 @@ fun getAverageDistanceFromPointsToCentroid(points: FloatArray): Float {
  * @return средний угол, прилегающий к центроиду для треугольников,
  * образованных между центроидом и точками по смежным индексам в @param beginPoints и @param endPoints.
  *
- * Кроме того, если вектор, образованный точккми
+ * Кроме того, если вектор, образованный точками
  * по смежным индексам в @param beginPoints и @param endPoints,
  * конец которого лежит на окружности с радиусом равным расстоянию от точки в @param beginPoints до центроида,
  * будет обращен по часовой стрелке, значение будет положительны. В противном случае, отрицательным.

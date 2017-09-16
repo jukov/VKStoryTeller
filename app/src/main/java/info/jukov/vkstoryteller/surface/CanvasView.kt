@@ -7,10 +7,11 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.os.Handler
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
+import info.jukov.vkstoryteller.R
 import info.jukov.vkstoryteller.util.moveToEnd
-import java.util.concurrent.TimeUnit
 
 /**
  * User: jukov
@@ -19,8 +20,9 @@ import java.util.concurrent.TimeUnit
  */
 
 private const val SCALE_TRESHOLD_MIN = 0.3f
-private const val SCALE_TRESHOLD_MAX = 2.0f//TODO to res?
+private const val SCALE_TRESHOLD_MAX = 2.0f
 
+private const val MAX_STICKERS = 50
 
 private const val DELETE_STICKER_ALPHA_FOR_ITERATION = 256 / 10
 private const val DELETE_STICKER_SCALE_START = 0.02f
@@ -33,7 +35,7 @@ class PostEditView @JvmOverloads constructor(
 
     var onStickerMoveListener: OnStickerMoveListner? = null
 
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)//TODO Check flags
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val stickerMatrix = Matrix()
 
     private var stickerList: MutableList<DragableImage> = ArrayList()
@@ -71,13 +73,19 @@ class PostEditView @JvmOverloads constructor(
 
     }
 
-    public fun addSticker(dragableImage: DragableImage) {
-        dragableImage.x = width.toFloat() / 2
-        dragableImage.y = height.toFloat() / 2
+    public fun addSticker(dragableImage: DragableImage): Boolean {
+        if (stickerList.size < MAX_STICKERS) {
+            dragableImage.x = width.toFloat() / 2
+            dragableImage.y = height.toFloat() / 2
 
-        stickerList.add(dragableImage)
+            stickerList.add(dragableImage)
 
-        invalidate()
+            invalidate()
+
+            return true
+        }
+
+        return false
     }
 
     fun deleteCurrentSticker() {
@@ -86,27 +94,27 @@ class PostEditView @JvmOverloads constructor(
 
     private fun deleteStickerWithAnimation() {
 
-        val nonNullSticker = currentSticker!!
+        val currentSticker = requireNotNull(this.currentSticker)
 
         val MESSAGE_ANIMATE_STICKER = 2053
         val MESSAGE_DELETE_STICKER = 2054
 
         var scalePerFrame = DELETE_STICKER_SCALE_START
 
-        val deleteHandler = Handler(Handler.Callback {//TODO refactor?
+        val deleteHandler = Handler(Handler.Callback {
             if (it == null) {
                 return@Callback true
             }
 
             if (it.what == MESSAGE_ANIMATE_STICKER) {
-                nonNullSticker.alpha -= DELETE_STICKER_ALPHA_FOR_ITERATION
-                nonNullSticker.scale = Math.max(nonNullSticker.scale - scalePerFrame, 0f)
+                currentSticker.alpha -= DELETE_STICKER_ALPHA_FOR_ITERATION
+                currentSticker.scale = Math.max(currentSticker.scale - scalePerFrame, 0f)
 
                 scalePerFrame *= DELETE_STICKER_SCALE_MULTIPLER_FOR_ITERATION
 
                 invalidate()
             } else if (it.what == MESSAGE_DELETE_STICKER) {
-                stickerList.remove(nonNullSticker)
+                stickerList.remove(currentSticker)
                 invalidate()
             }
 
@@ -116,13 +124,11 @@ class PostEditView @JvmOverloads constructor(
         for (i in 0..10 * 16 step 16) {
             deleteHandler.sendEmptyMessageDelayed(MESSAGE_ANIMATE_STICKER, i.toLong())
         }
-        deleteHandler.sendEmptyMessageDelayed(MESSAGE_DELETE_STICKER, 10*16);
+        deleteHandler.sendEmptyMessageDelayed(MESSAGE_DELETE_STICKER, 10 * 16);
     }
 
-    override fun onDraw(canvas: Canvas?) {
-        if (canvas == null) {
-            return
-        }
+    override fun onDraw(c: Canvas?) {
+        val canvas = requireNotNull(c)
 
         canvas.drawColor(Color.BLACK)
 
@@ -148,7 +154,7 @@ class PostEditView @JvmOverloads constructor(
             return
         }
 
-        if (previousCentroid == null) {//TODO нормальное условие
+        if (previousCentroid == null) {
             previousCentroid = getCentroid(currentPointers)
             previousDistanceSumFromPointsToCentroid = getAverageDistanceFromPointsToCentroid(currentPointers)
             previousPointers = currentPointers
@@ -194,13 +200,13 @@ class PostEditView @JvmOverloads constructor(
 
         invalidate()
 
-        if (currentCentroid.size == 2) {
+        if (currentPointers.size == 2) {
             onStickerMoveListener?.onStickerMoveByOnePointer(currentPointers)
         }
     }
 
     private fun onPointerCountChange() {
-        onStickerMoveListener?.onStickerStopMove()
+        onStickerMoveListener?.onPointerCountChange()
 
         previousCentroid = null
         previousDistanceSumFromPointsToCentroid = null
@@ -210,6 +216,6 @@ class PostEditView @JvmOverloads constructor(
 
     interface OnStickerMoveListner {
         fun onStickerMoveByOnePointer(pointer: FloatArray)
-        fun onStickerStopMove()
+        fun onPointerCountChange()
     }
 }

@@ -14,9 +14,9 @@ public enum class MessageStyle(private val color: Int, private val alpha: Int) {
     WHITE(Color.WHITE, 0xFF),
     WHITE_TRANSPARENT(Color.WHITE, 0x5C);
 
-    fun apply(backgroundAroundLetterSpan: BackgroundAroundLetterSpan) {
-        backgroundAroundLetterSpan.color = color
-        backgroundAroundLetterSpan.alpha = alpha
+    fun apply(backgroundAroundLineSpan: BackgroundAroundLineSpan) {
+        backgroundAroundLineSpan.color = color
+        backgroundAroundLineSpan.alpha = alpha
     }
 
 }

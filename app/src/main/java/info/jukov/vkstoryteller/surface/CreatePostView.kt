@@ -8,10 +8,13 @@ import android.os.Message
 import android.support.constraint.ConstraintLayout
 import android.text.Spannable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
+import android.widget.Toast
 import info.jukov.vkstoryteller.R
-import info.jukov.vkstoryteller.util.span.BackgroundAroundLetterSpan
-import info.jukov.vkstoryteller.util.span.StyleCarousel
+import info.jukov.vkstoryteller.util.span.BackgroundAroundLineSpan
+import info.jukov.vkstoryteller.util.ItemCarousel
+import info.jukov.vkstoryteller.util.span.MessageStyle
 import kotlinx.android.synthetic.main.view_create_post.view.*
 
 
@@ -40,8 +43,8 @@ class CreatePostView @JvmOverloads constructor(
 
     private val fabRect = Rect(0, 0, 0, 0)
 
-    private val styleCarousel = StyleCarousel()
-    private val messageSpan = BackgroundAroundLetterSpan()
+    private val styleCarousel = ItemCarousel<MessageStyle>(MessageStyle.values())
+    private val messageSpan = BackgroundAroundLineSpan()
 
     init {
         View.inflate(context, R.layout.view_create_post, this)
@@ -61,7 +64,7 @@ class CreatePostView @JvmOverloads constructor(
                 }
             }
 
-            override fun onStickerStopMove() {
+            override fun onPointerCountChange() {
                 uiThreadHandler.removeMessages(MESSAGE_SHOW_FAB)
                 when (fabDelete.state) {
                     DeleteFloatingActionButton.State.VISIBLE ->
@@ -83,41 +86,41 @@ class CreatePostView @JvmOverloads constructor(
     }
 
     public fun addSticker(dragableImage: DragableImage) {
-        postEditView.addSticker(dragableImage)
+        if (!postEditView.addSticker(dragableImage)) {
+            Toast.makeText(context, R.string.too_many_stickers, Toast.LENGTH_LONG).show()
+        }
     }
 
-    fun changeMessageStyle() {
+    public fun changeMessageStyle() {
         styleCarousel.next().apply(messageSpan)
         editTextMessage.invalidate()
     }
 
     override fun handleMessage(msg: Message?): Boolean {
-        if (msg != null) {
-            when (msg.what) {
-                MESSAGE_SHOW_FAB -> {
-                    fabDelete.show()
+        when (msg?.what) {
+            MESSAGE_SHOW_FAB -> {
+                fabDelete.show()
+            }
+            MESSAGE_HIDE_FAB -> {
+                fabDelete.hide()
+            }
+            MESSAGE_POINTER_MOVE -> {
+                if (fabRect.isEmpty) {
+                    fabDelete.getHitRect(fabRect)
+                    setRectToFab(
+                            fabContainer.left,
+                            fabContainer.top,
+                            fabContainer.width,
+                            fabContainer.height,
+                            fabRect)
                 }
-                MESSAGE_HIDE_FAB -> {
-                    fabDelete.hide()
-                }
-                MESSAGE_POINTER_MOVE -> {
-                    if (fabRect.isEmpty) {//TODO придумать способ получще для вытаскивания rect
-                        fabDelete.getHitRect(fabRect)
-                        setRectToFab(
-                                fabContainer.left,
-                                fabContainer.top,
-                                fabContainer.width,
-                                fabContainer.height,
-                                fabRect)
-                    }
 
-                    val pointer = msg.data.getFloatArray(KEY_POINTER)
+                val pointer = msg.data.getFloatArray(KEY_POINTER)
 
-                    if (fabRect.contains(pointer[0].toInt(), pointer[1].toInt())) {
-                        fabDelete.select()
-                    } else {
-                        fabDelete.deselect()
-                    }
+                if (fabRect.contains(pointer[0].toInt(), pointer[1].toInt())) {
+                    fabDelete.select()
+                } else {
+                    fabDelete.deselect()
                 }
             }
         }

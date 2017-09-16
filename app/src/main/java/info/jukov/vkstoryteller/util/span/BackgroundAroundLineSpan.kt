@@ -13,7 +13,7 @@ private const val EDGE_DIAMETER = EDGE_RADIUS * 2
 
 private const val EDGE_OFFSET = 5
 
-class BackgroundAroundLetterSpan : LineBackgroundSpan {
+class BackgroundAroundLineSpan : LineBackgroundSpan {
 
     private val currentRect = Rect()
     private val previousRect = Rect()
@@ -41,11 +41,18 @@ class BackgroundAroundLetterSpan : LineBackgroundSpan {
         paint.alpha = alpha
         paint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.SRC))
 
-        paint.getTextBounds(text.toString(), start, end, currentRect)
-        currentRect.top = (currentRect.bottom + paint.ascent()).toInt();
         val textCenter = (right - left) / 2
-        currentRect.offsetTo(textCenter - currentRect.centerX(), baseline - currentRect.height())
-        currentRect.inset(-30, -20)
+        val width = paint.measureText(text.toString(), start, end)
+
+        currentRect.bottom = baseline
+        currentRect.top = (currentRect.bottom + paint.ascent()).toInt();
+        currentRect.left = (textCenter - width / 2).toInt()
+        currentRect.right = (textCenter + width / 2).toInt()
+
+        currentRect.top -= 20
+        currentRect.bottom += 20
+        currentRect.left -= 20
+        currentRect.right += 23
 
         canvas.drawRoundRect(RectF(currentRect), EDGE_RADIUS.toFloat(), EDGE_RADIUS.toFloat(), paint)
 

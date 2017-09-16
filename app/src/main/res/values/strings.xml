@@ -4,4 +4,6 @@
 
 
 	<string name="message_hint">Что у вас нового?</string>
+
+	<string name="too_many_stickers">Нельзя размещать больше 50 стикеров</string>
 </resources>

@@ -31,6 +31,7 @@
 		<item name="android:hint">@string/message_hint</item>
 		<item name="android:background">@android:color/transparent</item>
 		<item name="android:textCursorDrawable">@drawable/transparent_cursor</item>
+		<item name="android:maxLines">8</item>
 	</style>
 	
 </resources>

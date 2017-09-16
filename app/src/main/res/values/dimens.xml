@@ -1,6 +1,7 @@
 <resources>
 
-	<dimen name="editTextMessagePadding">16dp</dimen>
+	<dimen name="editTextMessagePaddingHorizontal">24dp</dimen>
+	<dimen name="editTextMessagePaddingVertical">8dp</dimen>
 
 	<dimen name="fabSurfaceViewDefaultSize">48dp</dimen>
 	<dimen name="fabSurfaceViewSelectedSize">56dp</dimen>
