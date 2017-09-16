@@ -6,15 +6,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.support.constraint.ConstraintLayout
-import android.text.Editable
 import android.text.Spannable
-import android.text.TextWatcher
-import android.text.style.BackgroundColorSpan
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import info.jukov.vkstoryteller.R
-import info.jukov.vkstoryteller.util.BackgroundAroundLetterSpan
+import info.jukov.vkstoryteller.util.span.BackgroundAroundLetterSpan
+import info.jukov.vkstoryteller.util.span.StyleCarousel
 import kotlinx.android.synthetic.main.view_create_post.view.*
 
 
@@ -42,6 +39,9 @@ class CreatePostView @JvmOverloads constructor(
     private var uiThreadHandler = Handler(this)
 
     private val fabRect = Rect(0, 0, 0, 0)
+
+    private val styleCarousel = StyleCarousel()
+    private val messageSpan = BackgroundAroundLetterSpan()
 
     init {
         View.inflate(context, R.layout.view_create_post, this)
@@ -76,11 +76,19 @@ class CreatePostView @JvmOverloads constructor(
             }
         }
 
-        editTextMessage.text.setSpan(BackgroundAroundLetterSpan(), 0, editTextMessage.text.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        styleCarousel.next().apply(messageSpan)
+
+        editTextMessage.text.setSpan(messageSpan, 0, editTextMessage.text.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        editTextMessage.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
     public fun addSticker(dragableImage: DragableImage) {
         postEditView.addSticker(dragableImage)
+    }
+
+    fun changeMessageStyle() {
+        styleCarousel.next().apply(messageSpan)
+        editTextMessage.invalidate()
     }
 
     override fun handleMessage(msg: Message?): Boolean {

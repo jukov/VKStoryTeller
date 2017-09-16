@@ -16,7 +16,11 @@ class SurfaceActivity : AppCompatActivity() {
 
         val bitmap = BitmapFactory.decodeStream(assets.open(STICKER))
 
-        buttonAddSticker.setOnClickListener {
+        buttonMessageStyle.setOnClickListener {
+            createPostView.changeMessageStyle()
+        }
+
+        buttonStickerSelect.setOnClickListener {
             createPostView.addSticker(DragableImage(bitmap))
         }
     }

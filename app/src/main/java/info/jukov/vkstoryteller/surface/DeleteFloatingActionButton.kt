@@ -28,7 +28,7 @@ class DeleteFloatingActionButton @JvmOverloads constructor(
     public var state: State = State.HIDDEN
 
     public override fun hide() {
-        val animation = AnimationUtils.loadAnimation(context, R.anim.disappear_to_bottom)
+        val animation = AnimationUtils.loadAnimation(context, R.anim.disappear_to_bottom)//TODO попробовать положить анимацию в класс
         startAnimation(animation)
         visibility = View.GONE
         this.state = State.HIDDEN

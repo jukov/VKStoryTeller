@@ -5,24 +5,35 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<Button
-		android:id="@+id/buttonAddSticker"
+	<RelativeLayout
+		android:id="@+id/headerContainer"
 		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:text="Add sticker"
-		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintLeft_toRightOf="@+id/buttonDone"
-		app:layout_constraintTop_toTopOf="parent"/>
+		android:layout_height="@dimen/toolbarSize">
+		
+		<ImageView
+			android:id="@+id/buttonMessageStyle"
+			android:layout_width="@dimen/toolbarButtonSize"
+			android:layout_height="@dimen/toolbarButtonSize"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentTop="true"
+			app:srcCompat="@drawable/ic_toolbar_font"
+			android:scaleType="center"/>
 
-	<Button
-		android:id="@+id/buttonDone"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:text="Done"
-		app:layout_constraintHorizontal_bias="0.0"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintRight_toLeftOf="@+id/buttonAddSticker"
-		app:layout_constraintTop_toTopOf="parent"/>
+		<android.support.design.widget.TabLayout
+			android:layout_width="wrap_content"
+			android:layout_height="@dimen/toolbarSize"
+			android:layout_centerHorizontal="true"/>
+
+		<ImageView
+			android:id="@+id/buttonStickerSelect"
+			android:layout_width="@dimen/toolbarButtonSize"
+			android:layout_height="@dimen/toolbarButtonSize"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentTop="true"
+			app:srcCompat="@drawable/ic_toolbar_sticker"
+			android:scaleType="center"/>
+		
+	</RelativeLayout>
 
 	<info.jukov.vkstoryteller.surface.CreatePostView
 		android:id="@+id/createPostView"
@@ -30,7 +41,7 @@
 		android:layout_height="0dp"
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/buttonDone"
+		app:layout_constraintTop_toBottomOf="@+id/headerContainer"
 		app:layout_constraintBottom_toBottomOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

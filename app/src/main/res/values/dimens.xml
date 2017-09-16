@@ -7,4 +7,7 @@
 
 	<dimen name="messageTextSize">24sp</dimen>
 
+	<dimen name="toolbarSize">48dp</dimen>
+	<dimen name="toolbarButtonSize">48dp</dimen>
+
 </resources>
