@@ -6,6 +6,7 @@
 	android:layout_height="match_parent">
 
 	<RelativeLayout
+		android:background="@color/trueWhite"
 		android:id="@+id/headerContainer"
 		android:layout_width="0dp"
 		android:layout_height="@dimen/toolbarSize">
@@ -20,9 +21,11 @@
 			android:scaleType="center"/>
 
 		<android.support.design.widget.TabLayout
-			android:layout_width="wrap_content"
+			android:id="@+id/tabLayout"
+			android:layout_width="@dimen/tabLayoutWidth"
 			android:layout_height="@dimen/toolbarSize"
-			android:layout_centerHorizontal="true"/>
+			android:layout_centerHorizontal="true"
+			style="@style/TabLayout"/>
 
 		<ImageView
 			android:id="@+id/buttonStickerSelect"
@@ -32,7 +35,13 @@
 			android:layout_alignParentTop="true"
 			app:srcCompat="@drawable/ic_toolbar_sticker"
 			android:scaleType="center"/>
-		
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="0.5dp"
+			android:background="@color/trueBlackOpacity12"
+			android:layout_alignParentBottom="true"/>
+
 	</RelativeLayout>
 
 	<info.jukov.vkstoryteller.surface.CreatePostView

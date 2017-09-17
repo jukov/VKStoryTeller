@@ -18,20 +18,31 @@
 	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
 	<style name="FabDelete">
-		<item name="backgroundTint">@color/fabDeleteColor</item>
+		<item name="backgroundTint">@color/trueWhite</item>
 		<item name="srcCompat">@drawable/ic_fab_trash</item>
 	</style>
 
 	<style name="EditTextMessage">
 		<item name="android:textSize">@dimen/messageTextSize</item>
-		<item name="android:textColor">@color/messageTextColor</item>
-		<item name="android:textColorHint">@color/messageTextColor</item>
+		<item name="android:textColor">@color/black</item>
+		<item name="android:textColorHint">@color/blackOpacity24</item>
 		<item name="android:textStyle">bold</item>
 		<item name="android:gravity">center</item>
-		<item name="android:hint">@string/message_hint</item>
+		<item name="android:hint">@string/messageHint</item>
 		<item name="android:background">@android:color/transparent</item>
 		<item name="android:textCursorDrawable">@drawable/transparent_cursor</item>
 		<item name="android:maxLines">8</item>
 	</style>
-	
+
+	<style name="TabLayout" parent="Widget.Design.TabLayout">
+		<item name="tabIndicatorColor">?attr/colorAccent</item>
+		<item name="tabTextAppearance">@style/TabLayoutTextApperance</item>
+		<item name="tabSelectedTextColor">@color/colorAccent</item>
+	</style>
+
+	<style name="TabLayoutTextApperance" parent="TextAppearance.Design.Tab">
+		<item name="android:textSize">@dimen/tabTextSize</item>
+		<item name="android:textColor">@color/cornflowerBlueOpacity72</item>
+	</style>
+
 </resources>

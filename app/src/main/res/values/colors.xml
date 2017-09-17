@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<color name="true_white">#fff</color>
-	<color name="black">#2c2d2e</color>
+	<color name="trueWhite">#fff</color>
+	<color name="trueBlack">#000</color>
+	<color name="trueBlackOpacity12">#23000000</color>
 
-	<color name="cornflowerBlueTwo">#528bcc</color>
+	<color name="black">#2c2d2e</color>
+	<color name="blackOpacity24">#3c2c2d2e</color>
+
+
+	<color name="cornflowerBlue">#528bcc</color>
+	<color name="cornflowerBlueOpacity72">#b6528bcc</color>
 
 	<color name="colorPrimary">#3F51B5</color>
 	<color name="colorPrimaryDark">#303F9F</color>
-	<color name="colorAccent">@color/cornflowerBlueTwo</color>
+	<color name="colorAccent">@color/cornflowerBlue</color>
 
-	<color name="fabDeleteColor">@color/true_white</color>
-
-	<color name="messageTextColor">@color/black</color>
 </resources>

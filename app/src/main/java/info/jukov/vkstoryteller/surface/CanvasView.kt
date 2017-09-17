@@ -28,7 +28,7 @@ private const val DELETE_STICKER_ALPHA_FOR_ITERATION = 256 / 10
 private const val DELETE_STICKER_SCALE_START = 0.02f
 private const val DELETE_STICKER_SCALE_MULTIPLER_FOR_ITERATION = 2
 
-class PostEditView @JvmOverloads constructor(
+class CanvasView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
@@ -130,7 +130,7 @@ class PostEditView @JvmOverloads constructor(
     override fun onDraw(c: Canvas?) {
         val canvas = requireNotNull(c)
 
-        canvas.drawColor(Color.BLACK)
+        canvas.drawColor(Color.WHITE)
 
         stickerList.forEach {
             stickerMatrix.setScale(it.scale, it.scale)
@@ -143,6 +143,12 @@ class PostEditView @JvmOverloads constructor(
         }
 
         paint.alpha = 255
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val width = measuredWidth
+        setMeasuredDimension(width, width)
     }
 
     private fun onRedrawNeeded() {

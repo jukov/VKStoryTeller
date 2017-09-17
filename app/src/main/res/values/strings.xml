@@ -1,9 +1,10 @@
 <resources>
 	<string name="app_name">VKStoryTeller</string>
-	<string name="title_activity_surface">SurfaceActivity</string>
 
+	<string name="messageHint">Что у вас нового?</string>
 
-	<string name="message_hint">Что у вас нового?</string>
+	<string name="wallPost">Запись</string>
+	<string name="story">История</string>
 
-	<string name="too_many_stickers">Нельзя размещать больше 50 стикеров</string>
+	<string name="tooManyStickers">Нельзя размещать больше 50 стикеров</string>
 </resources>

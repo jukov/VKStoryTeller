@@ -8,15 +8,15 @@ import android.os.Message
 import android.support.constraint.ConstraintLayout
 import android.text.Spannable
 import android.util.AttributeSet
-import android.util.DisplayMetrics
-import android.util.TypedValue
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import info.jukov.vkstoryteller.R
-import info.jukov.vkstoryteller.util.message.BackgroundAroundLineSpan
 import info.jukov.vkstoryteller.util.ItemCarousel
-import info.jukov.vkstoryteller.util.message.WidthWrapperInputFilter
+import info.jukov.vkstoryteller.util.message.BackgroundAroundLineSpan
 import info.jukov.vkstoryteller.util.message.MessageStyle
+import info.jukov.vkstoryteller.util.message.WidthWrapperInputFilter
+import kotlinx.android.synthetic.main.screen_main.view.*
 import kotlinx.android.synthetic.main.view_create_post.view.*
 
 
@@ -53,7 +53,7 @@ class CreatePostView @JvmOverloads constructor(
     init {
         View.inflate(context, R.layout.view_create_post, this)
 
-        postEditView.onStickerMoveListener = object : PostEditView.OnStickerMoveListner {
+        canvasView.onStickerMoveListener = object : CanvasView.OnStickerMoveListner {
 
             override fun onStickerMoveByOnePointer(pointer: FloatArray) {
                 if (fabDelete.state != DeleteFloatingActionButton.State.HIDDEN) {
@@ -75,7 +75,7 @@ class CreatePostView @JvmOverloads constructor(
                         uiThreadHandler.sendEmptyMessage(MESSAGE_HIDE_FAB)
                     DeleteFloatingActionButton.State.SELECTED -> {
                         uiThreadHandler.sendEmptyMessage(MESSAGE_HIDE_FAB)
-                        postEditView.deleteCurrentSticker()
+                        canvasView.deleteCurrentSticker()
                     }
                     DeleteFloatingActionButton.State.HIDDEN -> {
                     }
@@ -83,9 +83,25 @@ class CreatePostView @JvmOverloads constructor(
             }
         }
 
+        fabContainer.addOnLayoutChangeListener({ _, left, top, right, bottom, _, _, _, _ ->
+            if (!fabRect.isEmpty) {
+                setRectToFab(
+                        left,
+                        top,
+                        right - left,
+                        bottom - top,
+                        fabRect)
+            }
+        })
+
+        fabDelete.addOnLayoutChangeListener({ _, _, _, _, _, _, _, _, _ ->
+            fabDelete.getHitRect(fabRect)
+        })
+
         styleCarousel.next().apply(messageSpan)
 
         editTextMessage.text.setSpan(messageSpan, 0, editTextMessage.text.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        //Рисуем без аппаратного ускорения, так как оно не поддерживает transparency
         editTextMessage.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
@@ -104,8 +120,8 @@ class CreatePostView @JvmOverloads constructor(
     }
 
     public fun addSticker(dragableImage: DragableImage) {
-        if (!postEditView.addSticker(dragableImage)) {
-            Toast.makeText(context, R.string.too_many_stickers, Toast.LENGTH_LONG).show()
+        if (!canvasView.addSticker(dragableImage)) {
+            Toast.makeText(context, R.string.tooManyStickers, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -123,16 +139,6 @@ class CreatePostView @JvmOverloads constructor(
                 fabDelete.hide()
             }
             MESSAGE_POINTER_MOVE -> {
-                if (fabRect.isEmpty) {
-                    fabDelete.getHitRect(fabRect)//TODO get new hitRect after window size change
-                    setRectToFab(
-                            fabContainer.left,
-                            fabContainer.top,
-                            fabContainer.width,
-                            fabContainer.height,
-                            fabRect)
-                }
-
                 val pointer = msg.data.getFloatArray(KEY_POINTER)
 
                 if (fabRect.contains(pointer[0].toInt(), pointer[1].toInt())) {

@@ -49,7 +49,17 @@ class CustomCursorEditText : EditText {
     }
 
     private fun drawCursor(canvas: Canvas) {
-        var cursorX = layout.getPrimaryHorizontal(selectionStart) + paddingLeft
+
+        var cursorX: Float
+
+        if (text.isEmpty()) {
+            val hintWidth = paint.measureText(hint.toString())
+
+            cursorX = (canvas.width - hintWidth) / 2
+
+        } else {
+            cursorX = layout.getPrimaryHorizontal(selectionStart) + paddingLeft
+        }
 
         if (cursorX < STROKE / 2) {
             cursorX = STROKE / 2f
