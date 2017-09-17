@@ -7,11 +7,10 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.os.Handler
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
-import info.jukov.vkstoryteller.R
 import info.jukov.vkstoryteller.util.moveToEnd
+import java.util.*
 
 /**
  * User: jukov
@@ -24,9 +23,13 @@ private const val SCALE_TRESHOLD_MAX = 2.0f
 
 private const val MAX_STICKERS = 50
 
-private const val DELETE_STICKER_ALPHA_FOR_ITERATION = 256 / 10
-private const val DELETE_STICKER_SCALE_START = 0.02f
-private const val DELETE_STICKER_SCALE_MULTIPLER_FOR_ITERATION = 2
+private const val ANIMATE_STICKER_ALPHA_FOR_ITERATION = 256 / 10
+private const val ANIMATE_STICKER_SCALE_START = 0.02f
+private const val ANIMATE_STICKER_SCALE_MULTIPLER_FOR_ITERATION = 2
+
+private const val MESSAGE_ANIMATE_STICKER = 2053
+private const val MESSAGE_DELETE_STICKER = 2054
+private const val MESSAGE_ADD_STICKER = 2055
 
 class CanvasView @JvmOverloads constructor(
         context: Context,
@@ -34,6 +37,8 @@ class CanvasView @JvmOverloads constructor(
         defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
     var onStickerMoveListener: OnStickerMoveListner? = null
+
+    private val random = Random()
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val stickerMatrix = Matrix()
@@ -73,15 +78,9 @@ class CanvasView @JvmOverloads constructor(
 
     }
 
-    public fun addSticker(dragableImage: DragableImage): Boolean {
+    public fun addSticker(dragableImage: DragableImage): Boolean {//TODO incapsulate dragable image
         if (stickerList.size < MAX_STICKERS) {
-            dragableImage.x = width.toFloat() / 2
-            dragableImage.y = height.toFloat() / 2
-
-            stickerList.add(dragableImage)
-
-            invalidate()
-
+            addStickerWithAnimation(dragableImage)
             return true
         }
 
@@ -99,25 +98,24 @@ class CanvasView @JvmOverloads constructor(
         val MESSAGE_ANIMATE_STICKER = 2053
         val MESSAGE_DELETE_STICKER = 2054
 
-        var scalePerFrame = DELETE_STICKER_SCALE_START
+        var scalePerFrame = ANIMATE_STICKER_SCALE_START
 
-        val deleteHandler = Handler(Handler.Callback {
+        val deleteHandler = Handler(Handler.Callback {//TODO check leaks
             if (it == null) {
                 return@Callback true
             }
 
             if (it.what == MESSAGE_ANIMATE_STICKER) {
-                currentSticker.alpha -= DELETE_STICKER_ALPHA_FOR_ITERATION
+                currentSticker.alpha -= ANIMATE_STICKER_ALPHA_FOR_ITERATION
                 currentSticker.scale = Math.max(currentSticker.scale - scalePerFrame, 0f)
 
-                scalePerFrame *= DELETE_STICKER_SCALE_MULTIPLER_FOR_ITERATION
+                scalePerFrame *= ANIMATE_STICKER_SCALE_MULTIPLER_FOR_ITERATION
 
-                invalidate()
             } else if (it.what == MESSAGE_DELETE_STICKER) {
                 stickerList.remove(currentSticker)
-                invalidate()
             }
 
+            invalidate()
             true
         })
 
@@ -125,6 +123,53 @@ class CanvasView @JvmOverloads constructor(
             deleteHandler.sendEmptyMessageDelayed(MESSAGE_ANIMATE_STICKER, i.toLong())
         }
         deleteHandler.sendEmptyMessageDelayed(MESSAGE_DELETE_STICKER, 10 * 16);
+    }
+
+    private fun addStickerWithAnimation(newSticker: DragableImage) {
+
+        stickerList.add(newSticker)
+
+        newSticker.angle = (random.nextInt(60) - 30).toFloat() //From -30* to 30*
+        newSticker.x = (random.nextInt(width - newSticker.width) + newSticker.width / 2).toFloat()
+        val randomYposition = random.nextBoolean();
+
+        if (randomYposition) {
+            newSticker.y = newSticker.heightCenter//To top of text
+        } else {
+            newSticker.y = height - newSticker.heightCenter//To bottom of text
+        }
+
+        val scale = (random.nextInt(20) + 90) / 100.0f //From 0.9 to 1.1
+
+        newSticker.scale = 0f
+        newSticker.alpha = 0
+
+        var scalePerFrame = ANIMATE_STICKER_SCALE_START
+
+        val appearHandler = Handler(Handler.Callback {//TODO check leaks
+            if (it == null) {
+                return@Callback true
+            }
+
+            if (it.what == MESSAGE_ANIMATE_STICKER) {
+                newSticker.alpha += Math.min(ANIMATE_STICKER_ALPHA_FOR_ITERATION * 2, 255)
+                newSticker.scale = Math.min(scalePerFrame, scale)
+
+                 scalePerFrame *= ANIMATE_STICKER_SCALE_MULTIPLER_FOR_ITERATION
+
+            } else if (it.what == MESSAGE_ADD_STICKER) {
+                newSticker.scale = scale
+                newSticker.alpha = 255
+            }
+
+            invalidate()
+            true
+        })
+
+        for (i in 0..10 * 16 step 16) {
+            appearHandler.sendEmptyMessageDelayed(MESSAGE_ANIMATE_STICKER, i.toLong())
+        }
+        appearHandler.sendEmptyMessageDelayed(MESSAGE_ADD_STICKER, 10 * 16);
     }
 
     override fun onDraw(c: Canvas?) {
