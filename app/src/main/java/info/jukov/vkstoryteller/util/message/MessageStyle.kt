@@ -1,4 +1,4 @@
-package info.jukov.vkstoryteller.util.span
+package info.jukov.vkstoryteller.util.message
 
 import android.graphics.Color
 

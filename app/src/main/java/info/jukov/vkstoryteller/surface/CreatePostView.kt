@@ -8,13 +8,15 @@ import android.os.Message
 import android.support.constraint.ConstraintLayout
 import android.text.Spannable
 import android.util.AttributeSet
+import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
 import info.jukov.vkstoryteller.R
-import info.jukov.vkstoryteller.util.span.BackgroundAroundLineSpan
+import info.jukov.vkstoryteller.util.message.BackgroundAroundLineSpan
 import info.jukov.vkstoryteller.util.ItemCarousel
-import info.jukov.vkstoryteller.util.span.MessageStyle
+import info.jukov.vkstoryteller.util.message.WidthWrapperInputFilter
+import info.jukov.vkstoryteller.util.message.MessageStyle
 import kotlinx.android.synthetic.main.view_create_post.view.*
 
 
@@ -33,6 +35,8 @@ private const val KEY_POINTER = "KEY_POINTER";
 private const val ON_POINTER_ON_FAB_MULTIPLER = 1.2F;
 
 private const val SHOW_FAB_DELAY = 300L;
+
+private const val MESSAGE_TEXT_PADDING_DP = 48;
 
 class CreatePostView @JvmOverloads constructor(
         context: Context,
@@ -85,6 +89,20 @@ class CreatePostView @JvmOverloads constructor(
         editTextMessage.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+
+        editTextMessage.filters = arrayOf(WidthWrapperInputFilter(editTextMessage.paint, calcMessageTextWidth(w)))
+
+    }
+
+    private fun calcMessageTextWidth(width: Int): Int {
+
+        val displayMetrics = context.resources.displayMetrics
+
+        return width - (MESSAGE_TEXT_PADDING_DP * displayMetrics.density + 0.5).toInt()
+
+    }
+
     public fun addSticker(dragableImage: DragableImage) {
         if (!postEditView.addSticker(dragableImage)) {
             Toast.makeText(context, R.string.too_many_stickers, Toast.LENGTH_LONG).show()
@@ -106,7 +124,7 @@ class CreatePostView @JvmOverloads constructor(
             }
             MESSAGE_POINTER_MOVE -> {
                 if (fabRect.isEmpty) {
-                    fabDelete.getHitRect(fabRect)
+                    fabDelete.getHitRect(fabRect)//TODO get new hitRect after window size change
                     setRectToFab(
                             fabContainer.left,
                             fabContainer.top,
