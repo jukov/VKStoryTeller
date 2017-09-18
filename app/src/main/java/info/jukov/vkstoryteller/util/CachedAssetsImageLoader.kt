@@ -44,8 +44,6 @@ public class CachedAssetsImageLoader(
             if (bitmap != null) {
                 cache.put(path, bitmap)
 
-                Log.i("TAG", cache.size().toString() + "/" + cache.maxSize())
-
                 it.onSuccess(bitmap)
             } else {
                 it.onError(NoSuchElementException())

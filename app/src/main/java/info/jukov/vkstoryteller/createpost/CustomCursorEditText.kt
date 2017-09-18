@@ -21,7 +21,7 @@ import info.jukov.vkstoryteller.R
  */
 private const val STROKE = 5f
 
-class CustomCursorEditText : EditText {
+open class CustomCursorEditText : EditText {
 
     private val cursorPaint = Paint()
 
@@ -40,8 +40,11 @@ class CustomCursorEditText : EditText {
     }
 
     public fun setCursorColor(@ColorInt color: Int) {
-        paint.color = color
+        cursorPaint.color = color
     }
+
+    @ColorInt
+    public fun getCursorColor() = cursorPaint.color
 
     override fun onDraw(c: Canvas?) {
         super.onDraw(c)

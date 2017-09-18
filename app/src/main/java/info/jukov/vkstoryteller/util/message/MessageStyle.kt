@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.support.v4.content.ContextCompat
 import info.jukov.vkstoryteller.R
 import info.jukov.vkstoryteller.createpost.CustomCursorEditText
+import info.jukov.vkstoryteller.createpost.MessageEditText
 import java.security.AccessControlContext
 
 /**
@@ -46,9 +47,9 @@ public class MessageStyle(private val backgroundColor: Int,
                                private val fontColor: Int,
                                private val cursorColor: Int) {
 
-    fun apply(backgroundAroundLineSpan: BackgroundAroundLineSpan, editText: CustomCursorEditText) {
-        backgroundAroundLineSpan.color = backgroundColor
-        backgroundAroundLineSpan.alpha = backgroundAlpha
+    fun apply(editText: MessageEditText) {
+        editText.messageSpan.color = backgroundColor
+        editText.messageSpan.alpha = backgroundAlpha
         editText.setTextColor(fontColor)
         editText.setCursorColor(cursorColor)
     }

@@ -5,9 +5,11 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.os.Parcelable
 import android.support.constraint.ConstraintLayout
 import android.text.Spannable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import info.jukov.vkstoryteller.R
@@ -49,7 +51,6 @@ class CreatePostView @JvmOverloads constructor(
     private val fabRect = Rect(0, 0, 0, 0)
 
     private val styleCarousel = ItemCarousel<MessageStyle>(getMessageStyles(context))
-    private val messageSpan = BackgroundAroundLineSpan()
 
     init {
         View.inflate(context, R.layout.view_create_post, this)
@@ -99,17 +100,11 @@ class CreatePostView @JvmOverloads constructor(
             fabDelete.getHitRect(fabRect)
         })
 
-        styleCarousel.next().apply(messageSpan, editTextMessage)
-
-        editTextMessage.text.setSpan(messageSpan, 0, editTextMessage.text.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-        //Рисуем без аппаратного ускорения, так как оно не поддерживает transparency
-        editTextMessage.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        styleCarousel.next().apply(editTextMessage)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-
         editTextMessage.filters = arrayOf(WidthWrapperInputFilter(editTextMessage.paint, calcMessageTextWidth(w)))
-
     }
 
     private fun calcMessageTextWidth(width: Int): Int {
@@ -127,7 +122,7 @@ class CreatePostView @JvmOverloads constructor(
     }
 
     public fun changeMessageStyle() {
-        styleCarousel.next().apply(messageSpan, editTextMessage)
+        styleCarousel.next().apply(editTextMessage)
         editTextMessage.invalidate()
     }
 
