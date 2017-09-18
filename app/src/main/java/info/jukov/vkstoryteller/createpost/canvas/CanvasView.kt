@@ -5,12 +5,18 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
+import android.os.Bundle
 import android.os.Handler
+import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.SparseArray
 import android.view.MotionEvent
 import android.view.View
-import info.jukov.vkstoryteller.createpost.*
+import info.jukov.vkstoryteller.util.CachedAssetsImageLoader
 import info.jukov.vkstoryteller.util.moveToEnd
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 /**
@@ -28,9 +34,14 @@ private const val ANIMATE_STICKER_ALPHA_FOR_ITERATION = 256 / 10
 private const val ANIMATE_STICKER_SCALE_START = 0.02f
 private const val ANIMATE_STICKER_SCALE_MULTIPLER_FOR_ITERATION = 2
 
+private const val AVERAGE_STICKER_SIZE = 128000
+private const val AVERAGE_STICKER_COUNT = 5
+
 private const val MESSAGE_ANIMATE_STICKER = 2053
 private const val MESSAGE_DELETE_STICKER = 2054
 private const val MESSAGE_ADD_STICKER = 2055
+
+private const val KEY_STICKER_LIST = "KEY_STICKER_LIST"
 
 class CanvasView @JvmOverloads constructor(
         context: Context,
@@ -39,17 +50,19 @@ class CanvasView @JvmOverloads constructor(
 
     var onStickerMoveListener: OnStickerMoveListner? = null
 
+    private val imageLoader = CachedAssetsImageLoader(context.assets, AVERAGE_STICKER_SIZE, AVERAGE_STICKER_COUNT)
+
     private val random = Random()
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val stickerMatrix = Matrix()
 
-    private var stickerList: MutableList<DragableImage> = ArrayList()
+    private var stickerList = ArrayList<Sticker>()
 
     private var previousCentroid: FloatArray? = null
     private var previousDistanceSumFromPointsToCentroid: Float? = null
     private var previousPointers: FloatArray? = null
-    private var currentSticker: DragableImage? = null
+    private var currentSticker: Sticker? = null
 
     init {
 
@@ -79,13 +92,35 @@ class CanvasView @JvmOverloads constructor(
 
     }
 
-    public fun addSticker(dragableImage: DragableImage): Boolean {//TODO incapsulate dragable image
+    public fun addSticker(path: String): Boolean {
+        //TODO потенциально, можно добавиль больше стикеров, успеть вызвать метод еще раз до загрузки стикера
         if (stickerList.size < MAX_STICKERS) {
-            addStickerWithAnimation(dragableImage)
+
+            imageLoader.getImage(path)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(Consumer {
+                        addStickerWithAnimation(Sticker(it, path))
+                    })
+
             return true
         }
 
         return false
+    }
+
+    override fun onSaveInstanceState(): Parcelable {
+        return CanvasState(super.onSaveInstanceState(), stickerList.toTypedArray())
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        val canvasState = state as CanvasState
+
+        super.onRestoreInstanceState(canvasState.viewState)
+
+        canvasState.restoreBitmaps(imageLoader)
+        stickerList.addAll(canvasState.stickers)
+        invalidate()
     }
 
     fun deleteCurrentSticker() {
@@ -101,7 +136,7 @@ class CanvasView @JvmOverloads constructor(
 
         var scalePerFrame = ANIMATE_STICKER_SCALE_START
 
-        val deleteHandler = Handler(Handler.Callback {//TODO check leaks
+        val deleteHandler = Handler(Handler.Callback {
             if (it == null) {
                 return@Callback true
             }
@@ -126,12 +161,12 @@ class CanvasView @JvmOverloads constructor(
         deleteHandler.sendEmptyMessageDelayed(MESSAGE_DELETE_STICKER, 10 * 16);
     }
 
-    private fun addStickerWithAnimation(newSticker: DragableImage) {
+    private fun addStickerWithAnimation(newSticker: Sticker) {
 
         stickerList.add(newSticker)
 
         newSticker.angle = (random.nextInt(60) - 30).toFloat() //From -30* to 30*
-        newSticker.x = (random.nextInt(width - newSticker.width) + newSticker.width / 2).toFloat()
+        newSticker.x = (random.nextInt(width - newSticker.width.toInt()) + newSticker.width / 2).toFloat()
         val randomYposition = random.nextBoolean();
 
         if (randomYposition) {
@@ -147,7 +182,7 @@ class CanvasView @JvmOverloads constructor(
 
         var scalePerFrame = ANIMATE_STICKER_SCALE_START
 
-        val appearHandler = Handler(Handler.Callback {//TODO check leaks
+        val appearHandler = Handler(Handler.Callback {
             if (it == null) {
                 return@Callback true
             }
@@ -215,7 +250,7 @@ class CanvasView @JvmOverloads constructor(
             return
         }
 
-        val currentSticker: DragableImage = this.currentSticker!!
+        val currentSticker: Sticker = this.currentSticker!!
 
         //Calc translate
         val currentCentroid = getCentroid(currentPointers)

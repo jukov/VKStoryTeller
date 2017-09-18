@@ -1,7 +1,5 @@
 package info.jukov.vkstoryteller.createpost.canvas
 
-import info.jukov.vkstoryteller.createpost.canvas.DragableImage
-
 /**
  * User: jukov
  * Date: 06.09.2017
@@ -52,12 +50,12 @@ fun getCentroid(points: FloatArray): FloatArray {
     return floatArrayOf(centroidX / pointsCount, centroidY / pointsCount)
 }
 
-fun getMostCloseSticker(pointers: FloatArray, stickerList: List<DragableImage>): DragableImage {
+fun getMostCloseSticker(pointers: FloatArray, stickerList: List<Sticker>): Sticker {
     require(stickerList.size > 0)
     require(pointers.size >= 2, { "Require at least 1 pointer for caclulate distance" })
     require(pointers.size.rem(2) == 0, { "Arrays must be contain pairs of coordinates of pointers" })
 
-    var mostClosedSticker: DragableImage = stickerList.get(0)
+    var mostClosedSticker: Sticker = stickerList.get(0)
     var bestPointersToCenterLengthSum = Float.MAX_VALUE
 
     stickerList.forEach {

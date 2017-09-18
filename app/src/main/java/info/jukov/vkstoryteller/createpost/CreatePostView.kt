@@ -12,7 +12,7 @@ import android.view.View
 import android.widget.Toast
 import info.jukov.vkstoryteller.R
 import info.jukov.vkstoryteller.createpost.canvas.CanvasView
-import info.jukov.vkstoryteller.createpost.canvas.DragableImage
+import info.jukov.vkstoryteller.createpost.canvas.Sticker
 import info.jukov.vkstoryteller.util.ItemCarousel
 import info.jukov.vkstoryteller.util.message.BackgroundAroundLineSpan
 import info.jukov.vkstoryteller.util.message.MessageStyle
@@ -119,8 +119,8 @@ class CreatePostView @JvmOverloads constructor(
 
     }
 
-    public fun addSticker(dragableImage: DragableImage) {
-        if (!canvasView.addSticker(dragableImage)) {
+    public fun addSticker(stickerPath: String) {
+        if (!canvasView.addSticker(stickerPath)) {
             Toast.makeText(context, R.string.tooManyStickers, Toast.LENGTH_LONG).show()
         }
     }

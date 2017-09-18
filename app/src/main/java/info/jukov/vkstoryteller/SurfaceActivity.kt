@@ -74,7 +74,8 @@ class SurfaceActivity : AppCompatActivity() {
 
         adapter.stickerClickListener = object : StickerAdapter.OnStickerClickListener {
             override fun onClick(path: String) {
-
+                toggleStickerPickerVisibility()
+                createPostView.addSticker(path)
             }
         }
 

@@ -1,8 +1,6 @@
 package info.jukov.vkstoryteller
 
-import android.media.Image
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +9,7 @@ import info.jukov.vkstoryteller.util.CachedAssetsImageLoader
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 /**
  * User: jukov
@@ -47,7 +46,7 @@ class StickerAdapter(val imageLoader: CachedAssetsImageLoader, stickerFileNames:
 
         public fun bind(path: String, imageLoader: CachedAssetsImageLoader, onClickListener: OnStickerClickListener?) {
 
-            imageLoader.getImageScaled(path)
+            imageLoader.getImage(path)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(Consumer {

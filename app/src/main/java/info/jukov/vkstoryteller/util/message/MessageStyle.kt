@@ -8,7 +8,7 @@ import android.graphics.Color
  * Time: 10:48
  */
 
-public enum class MessageStyle(private val color: Int, private val alpha: Int) {
+public enum class MessageStyle(private val color: Int, private val alpha: Int) {//TODO black background style
 
     NONE(Color.TRANSPARENT, 0x0),
     WHITE(Color.WHITE, 0xFF),

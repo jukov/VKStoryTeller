@@ -27,7 +27,7 @@ public class CachedAssetsImageLoader(
         cache = BitmapLruCache(itemAverageSizeBytes * itemCount)
     }
 
-    public fun getImageScaled(path: String): Single<Bitmap> {
+    public fun getImage(path: String): Single<Bitmap> {
 
         val cachedBitmap = cache.get(path)
 
