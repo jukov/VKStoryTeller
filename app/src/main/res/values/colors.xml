@@ -2,6 +2,7 @@
 <resources>
 
 	<color name="trueWhite">#fff</color>
+	<color name="trueWhiteOpacity72">#b6ffffff</color>
 	<color name="trueBlack">#000</color>
 	<color name="trueBlackOpacity48">#81000000</color>
 	<color name="trueBlackOpacity12">#23000000</color>

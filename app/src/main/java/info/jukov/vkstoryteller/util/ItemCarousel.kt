@@ -6,18 +6,18 @@ package info.jukov.vkstoryteller.util
  * Time: 11:18
  */
 
-public class ItemCarousel<T>(itemArray: Array<T>) {
+public class ItemCarousel<T>(itemList: List<T>) {
 
     private val itemList: List<T>
 
     private var iterator: Iterator<T>
 
     init {
-        require(itemArray.size > 0, { "itemArray cannot be empty" })
+        require(itemList.size > 0, { "itemList cannot be empty" })
 
-        this.itemList = itemArray.toList()
+        this.itemList = itemList.toList()
 
-        iterator = itemList.iterator()
+        iterator = this.itemList.iterator()
     }
 
     public fun next(): T {

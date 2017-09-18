@@ -3,6 +3,7 @@ package info.jukov.vkstoryteller.createpost
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.support.annotation.ColorInt
 import android.util.AttributeSet
 import android.widget.EditText
 import info.jukov.vkstoryteller.R
@@ -36,6 +37,10 @@ class CustomCursorEditText : EditText {
 
         cursorPaint.color = typedArray.getColor(0, 0)
         cursorPaint.strokeWidth = STROKE
+    }
+
+    public fun setCursorColor(@ColorInt color: Int) {
+        paint.color = color
     }
 
     override fun onDraw(c: Canvas?) {

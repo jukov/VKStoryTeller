@@ -17,6 +17,7 @@ import info.jukov.vkstoryteller.util.ItemCarousel
 import info.jukov.vkstoryteller.util.message.BackgroundAroundLineSpan
 import info.jukov.vkstoryteller.util.message.MessageStyle
 import info.jukov.vkstoryteller.util.message.WidthWrapperInputFilter
+import info.jukov.vkstoryteller.util.message.getMessageStyles
 import kotlinx.android.synthetic.main.view_create_post.view.*
 
 
@@ -47,7 +48,7 @@ class CreatePostView @JvmOverloads constructor(
 
     private val fabRect = Rect(0, 0, 0, 0)
 
-    private val styleCarousel = ItemCarousel<MessageStyle>(MessageStyle.values())
+    private val styleCarousel = ItemCarousel<MessageStyle>(getMessageStyles(context))
     private val messageSpan = BackgroundAroundLineSpan()
 
     init {
@@ -98,7 +99,7 @@ class CreatePostView @JvmOverloads constructor(
             fabDelete.getHitRect(fabRect)
         })
 
-        styleCarousel.next().apply(messageSpan)
+        styleCarousel.next().apply(messageSpan, editTextMessage)
 
         editTextMessage.text.setSpan(messageSpan, 0, editTextMessage.text.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
         //Рисуем без аппаратного ускорения, так как оно не поддерживает transparency
@@ -126,7 +127,7 @@ class CreatePostView @JvmOverloads constructor(
     }
 
     public fun changeMessageStyle() {
-        styleCarousel.next().apply(messageSpan)
+        styleCarousel.next().apply(messageSpan, editTextMessage)
         editTextMessage.invalidate()
     }
 
