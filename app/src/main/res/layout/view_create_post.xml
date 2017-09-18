@@ -11,7 +11,7 @@
 		android:layout_height="wrap_content"
 		android:layout_centerInParent="true">
 
-		<info.jukov.vkstoryteller.surface.CanvasView
+		<info.jukov.vkstoryteller.createpost.canvas.CanvasView
 			android:id="@+id/canvasView"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
@@ -26,7 +26,7 @@
 			android:layout_alignBottom="@id/canvasView"
 			android:layout_centerHorizontal="true">
 
-			<info.jukov.vkstoryteller.surface.DeleteFloatingActionButton
+			<info.jukov.vkstoryteller.createpost.DeleteFloatingActionButton
 				android:id="@+id/fabDelete"
 				android:layout_width="@dimen/fabSurfaceViewDefaultSize"
 				android:layout_height="@dimen/fabSurfaceViewDefaultSize"
@@ -40,7 +40,7 @@
 
 	</RelativeLayout>
 
-	<info.jukov.vkstoryteller.surface.CustomCursorEditText
+	<info.jukov.vkstoryteller.createpost.CustomCursorEditText
 		android:id="@+id/editTextMessage"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

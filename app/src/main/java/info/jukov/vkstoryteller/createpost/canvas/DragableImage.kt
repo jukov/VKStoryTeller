@@ -1,4 +1,4 @@
-package info.jukov.vkstoryteller.surface
+package info.jukov.vkstoryteller.createpost.canvas
 
 import android.graphics.Bitmap
 

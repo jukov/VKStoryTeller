@@ -6,5 +6,7 @@
 	<string name="wallPost">Запись</string>
 	<string name="story">История</string>
 
+	<string name="stickers">Стикеры</string>
+
 	<string name="tooManyStickers">Нельзя размещать больше 50 стикеров</string>
 </resources>

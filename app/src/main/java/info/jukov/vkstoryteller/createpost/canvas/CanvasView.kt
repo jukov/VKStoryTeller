@@ -1,4 +1,4 @@
-package info.jukov.vkstoryteller.surface
+package info.jukov.vkstoryteller.createpost.canvas
 
 import android.content.Context
 import android.graphics.Canvas
@@ -9,6 +9,7 @@ import android.os.Handler
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import info.jukov.vkstoryteller.createpost.*
 import info.jukov.vkstoryteller.util.moveToEnd
 import java.util.*
 

@@ -1,4 +1,4 @@
-package info.jukov.vkstoryteller.surface
+package info.jukov.vkstoryteller.createpost
 
 import android.content.Context
 import android.graphics.Rect
@@ -8,15 +8,15 @@ import android.os.Message
 import android.support.constraint.ConstraintLayout
 import android.text.Spannable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import info.jukov.vkstoryteller.R
+import info.jukov.vkstoryteller.createpost.canvas.CanvasView
+import info.jukov.vkstoryteller.createpost.canvas.DragableImage
 import info.jukov.vkstoryteller.util.ItemCarousel
 import info.jukov.vkstoryteller.util.message.BackgroundAroundLineSpan
 import info.jukov.vkstoryteller.util.message.MessageStyle
 import info.jukov.vkstoryteller.util.message.WidthWrapperInputFilter
-import kotlinx.android.synthetic.main.screen_main.view.*
 import kotlinx.android.synthetic.main.view_create_post.view.*
 
 

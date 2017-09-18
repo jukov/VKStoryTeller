@@ -1,4 +1,6 @@
-package info.jukov.vkstoryteller.surface
+package info.jukov.vkstoryteller.createpost.canvas
+
+import info.jukov.vkstoryteller.createpost.canvas.DragableImage
 
 /**
  * User: jukov

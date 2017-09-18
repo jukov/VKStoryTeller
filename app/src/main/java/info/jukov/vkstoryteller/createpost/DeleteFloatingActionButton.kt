@@ -1,4 +1,4 @@
-package info.jukov.vkstoryteller.surface
+package info.jukov.vkstoryteller.createpost
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -37,8 +37,8 @@ class DeleteFloatingActionButton @JvmOverloads constructor(
     private val selectedIcon: Drawable
 
     init {
-        hideAnimaion = AnimationUtils.loadAnimation(context, R.anim.disappear_to_bottom)
-        showAnimaion = AnimationUtils.loadAnimation(context, R.anim.appear_from_bottom)
+        hideAnimaion = AnimationUtils.loadAnimation(context, R.anim.fab_disappear)
+        showAnimaion = AnimationUtils.loadAnimation(context, R.anim.fab_appear)
 
         defaultWidth = context.resources.getDimensionPixelSize(R.dimen.fabSurfaceViewDefaultSize)
         selectedWidth = context.resources.getDimensionPixelSize(R.dimen.fabSurfaceViewSelectedSize)

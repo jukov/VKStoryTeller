@@ -3,6 +3,7 @@
 
 	<color name="trueWhite">#fff</color>
 	<color name="trueBlack">#000</color>
+	<color name="trueBlackOpacity48">#81000000</color>
 	<color name="trueBlackOpacity12">#23000000</color>
 
 	<color name="black">#2c2d2e</color>

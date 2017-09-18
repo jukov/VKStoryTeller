@@ -1,5 +1,6 @@
 <resources>
 
+	<!--TODO refactor themes-->
 	<!-- Base application theme. -->
 	<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
 		<!-- Customize your theme here. -->
@@ -43,6 +44,11 @@
 	<style name="TabLayoutTextApperance" parent="TextAppearance.Design.Tab">
 		<item name="android:textSize">@dimen/tabTextSize</item>
 		<item name="android:textColor">@color/cornflowerBlueOpacity72</item>
+	</style>
+
+	<style name="StickerTitle">
+		<item name="android:textSize">@dimen/stickerPickerTitleTextSize</item>
+		<item name="android:textColor">@color/black</item>
 	</style>
 
 </resources>

@@ -1,16 +1,24 @@
 <resources>
 
+	<dimen name="messageTextSize">24sp</dimen>
+	<dimen name="tabTextSize">14sp</dimen>
+	<dimen name="stickerPickerTitleTextSize">16sp</dimen>
+
 	<dimen name="editTextMessagePadding">8dp</dimen>
 
 	<dimen name="fabSurfaceViewDefaultSize">48dp</dimen>
 	<dimen name="fabSurfaceViewSelectedSize">56dp</dimen>
 
-	<dimen name="messageTextSize">24sp</dimen>
-	<dimen name="tabTextSize">14sp</dimen>
-
 	<dimen name="toolbarSize">48dp</dimen>
 	<dimen name="toolbarButtonSize">48dp</dimen>
 
 	<dimen name="tabLayoutWidth">184dp</dimen>
+
+	<dimen name="stickerPickerRecyclerHeight">328dp</dimen>
+	<dimen name="stickerPickerTitleHeight">56dp</dimen>
+	<dimen name="stickerPickerTitlePadding">16dp</dimen>
+
+	<dimen name="stickerWidth">78dp</dimen>
+	<dimen name="stickerMargin">4dp</dimen>
 
 </resources>
