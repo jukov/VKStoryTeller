@@ -1,4 +1,4 @@
-package info.jukov.vkstoryteller.util.message
+package info.jukov.vkstoryteller.createpost
 
 import android.content.Context
 import android.content.res.Resources
@@ -15,7 +15,7 @@ import java.security.AccessControlContext
  * Time: 10:48
  */
 
-public fun getMessageStyles(context: Context): List<MessageStyle> {
+fun getMessageStyles(context: Context): List<MessageStyle> {
 
     //TODO background из ресурсов + alpha внутри color
     val defaultStyle = MessageStyle(
@@ -32,17 +32,24 @@ public fun getMessageStyles(context: Context): List<MessageStyle> {
             ContextCompat.getColor(context, R.color.cornflowerBlueOpacity72)
     )
 
-    val transparentBackgroundStyle = MessageStyle(
-            Color.WHITE,
-            0x1e,
+    val blackBackgroundStyle = MessageStyle(
+            Color.BLACK,
+            0xff,
             ContextCompat.getColor(context, R.color.trueWhite),
             ContextCompat.getColor(context, R.color.trueWhiteOpacity72)
     )
 
-    return listOf(defaultStyle, whiteBackgroundStyle, transparentBackgroundStyle)
+    val transparentBackgroundStyle = MessageStyle(
+            Color.WHITE,
+            0x50,
+            ContextCompat.getColor(context, R.color.trueWhite),
+            ContextCompat.getColor(context, R.color.trueWhiteOpacity72)
+    )
+
+    return listOf(defaultStyle, blackBackgroundStyle, whiteBackgroundStyle, transparentBackgroundStyle)
 }
 
-public class MessageStyle(private val backgroundColor: Int,
+class MessageStyle(private val backgroundColor: Int,
                                private val backgroundAlpha: Int,
                                private val fontColor: Int,
                                private val cursorColor: Int) {

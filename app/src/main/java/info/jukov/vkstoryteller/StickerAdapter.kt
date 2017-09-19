@@ -44,7 +44,7 @@ class StickerAdapter(val imageLoader: CachedAssetsImageLoader, stickerFileNames:
 
     class StickerHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        public fun bind(path: String, imageLoader: CachedAssetsImageLoader, onClickListener: OnStickerClickListener?) {
+        fun bind(path: String, imageLoader: CachedAssetsImageLoader, onClickListener: OnStickerClickListener?) {
 
             imageLoader.getImage(path)
                     .subscribeOn(Schedulers.io())
@@ -61,7 +61,7 @@ class StickerAdapter(val imageLoader: CachedAssetsImageLoader, stickerFileNames:
 
     }
 
-    public interface OnStickerClickListener {
+    interface OnStickerClickListener {
 
         fun onClick(path: String)
 

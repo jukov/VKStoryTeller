@@ -3,6 +3,7 @@ package info.jukov.vkstoryteller.util.message
 import android.graphics.Paint
 import android.text.InputFilter
 import android.text.Spanned
+import android.util.Log
 
 
 /**
@@ -11,18 +12,31 @@ import android.text.Spanned
  * Time: 22:39
  */
 
+private const val MAX_LINES = 8
+
 private const val RETURN_SYM = '\n'
 private const val SPACE = ' '
 
-public class WidthWrapperInputFilter(private val paint: Paint, private val maxWidth: Int) : InputFilter {
+class WidthWrapperInputFilter(private val paint: Paint, private val maxWidth: Int) : InputFilter {
 
     override fun filter(source: CharSequence?, start: Int, end: Int, dest: Spanned?, dstart: Int, dend: Int): CharSequence? {
         val destPart = dest?.subSequence(0, dstart)
         val sourcePart = source?.subSequence(start, end)
 
-        if(destPart == null || sourcePart == null || sourcePart.length < 1){
+        if (destPart == null || sourcePart == null || sourcePart.length < 1) {
             return null;
         }
+
+        if ((dest.toString() + sourcePart).count { it == RETURN_SYM } > MAX_LINES - 1) {
+            return ""
+        }
+
+        Log.i("TAG",
+                "drtart: " + dstart +
+                        " source: " + source +
+                        " sourcePart: " + sourcePart +
+                        " dest: " + dest +
+                        " destPart: " + destPart)
 
         var previousReturnIndex = -1
 
@@ -50,6 +64,11 @@ public class WidthWrapperInputFilter(private val paint: Paint, private val maxWi
             if (paint.measureText(sourceBuilder.toString()) + previousTextWidth > maxWidth) {
                 previousTextWidth = 0
 
+                //Если строка больше заданной ширины, проверяем еще раз что не привысим максимальное количество строк
+                if ((dest.toString() + resultBuilder).count { it == RETURN_SYM } >= MAX_LINES - 1) {
+                    return resultBuilder
+                }
+
                 val lastSpace = getLastSpaceIndex(sourceBuilder)
 
                 if (lastSpace > 0) {
@@ -67,6 +86,25 @@ public class WidthWrapperInputFilter(private val paint: Paint, private val maxWi
         }
 
         resultBuilder.append(sourceBuilder)
+
+        val destReturnCount = dest.count() { it == RETURN_SYM}
+        val resultReturnCount = resultBuilder.count { it == RETURN_SYM }
+
+        if (destReturnCount + resultReturnCount > MAX_LINES - 1) {
+
+            val acceptableReturnCountInResult = MAX_LINES - 1 - destReturnCount
+
+            var returnCount = 0
+            for (i in 0..resultBuilder.length - 1) {
+                if (resultBuilder[i] == RETURN_SYM) {
+                    returnCount++
+
+                    if (returnCount >= acceptableReturnCountInResult) {
+                        return resultBuilder.substring(i)
+                    }
+                }
+            }
+        }
 
         return resultBuilder.toString()
     }

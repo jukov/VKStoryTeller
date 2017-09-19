@@ -21,7 +21,7 @@ class DeleteFloatingActionButton @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0) : FloatingActionButton(context, attrs, defStyleAttr) {
 
-    public enum class State {
+    enum class State {
         HIDDEN,
         VISIBLE,
         SELECTED
@@ -47,21 +47,21 @@ class DeleteFloatingActionButton @JvmOverloads constructor(
         selectedIcon = ContextCompat.getDrawable(context, R.drawable.ic_fab_trash_released)
     }
 
-    public var state: State = State.HIDDEN
+    var state: State = State.HIDDEN
 
-    public override fun hide() {
+    override fun hide() {
         startAnimation(hideAnimaion)
         visibility = View.GONE
         this.state = State.HIDDEN
     }
 
-    public override fun show() {
+    override fun show() {
         startAnimation(showAnimaion)
         visibility = View.VISIBLE
         this.state = State.VISIBLE
     }
 
-    public fun select() {
+    fun select() {
         val layoutParams = fabDelete.layoutParams
 
         layoutParams.width = selectedWidth
@@ -73,7 +73,7 @@ class DeleteFloatingActionButton @JvmOverloads constructor(
         state = State.SELECTED
     }
 
-    public fun deselect() {
+    fun deselect() {
         val layoutParams = fabDelete.layoutParams
 
         layoutParams.width = defaultWidth

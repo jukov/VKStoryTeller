@@ -15,7 +15,7 @@ import java.util.NoSuchElementException
  * Time: 19:31
  */
 
-public class CachedAssetsImageLoader(
+class CachedAssetsImageLoader(
         val assets: AssetManager,
         val itemAverageSizeBytes: Int = 128000,
         val itemCount: Int = 10,
@@ -27,7 +27,7 @@ public class CachedAssetsImageLoader(
         cache = BitmapLruCache(itemAverageSizeBytes * itemCount)
     }
 
-    public fun getImage(path: String): Single<Bitmap> {
+    fun getImage(path: String): Single<Bitmap> {
 
         val cachedBitmap = cache.get(path)
 

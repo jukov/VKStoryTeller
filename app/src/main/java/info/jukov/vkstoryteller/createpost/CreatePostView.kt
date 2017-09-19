@@ -17,9 +17,9 @@ import info.jukov.vkstoryteller.createpost.canvas.CanvasView
 import info.jukov.vkstoryteller.createpost.canvas.Sticker
 import info.jukov.vkstoryteller.util.ItemCarousel
 import info.jukov.vkstoryteller.util.message.BackgroundAroundLineSpan
-import info.jukov.vkstoryteller.util.message.MessageStyle
+import info.jukov.vkstoryteller.createpost.MessageStyle
 import info.jukov.vkstoryteller.util.message.WidthWrapperInputFilter
-import info.jukov.vkstoryteller.util.message.getMessageStyles
+import info.jukov.vkstoryteller.createpost.getMessageStyles
 import kotlinx.android.synthetic.main.view_create_post.view.*
 
 
@@ -115,13 +115,13 @@ class CreatePostView @JvmOverloads constructor(
 
     }
 
-    public fun addSticker(stickerPath: String) {
+    fun addSticker(stickerPath: String) {
         if (!canvasView.addSticker(stickerPath)) {
             Toast.makeText(context, R.string.tooManyStickers, Toast.LENGTH_LONG).show()
         }
     }
 
-    public fun changeMessageStyle() {
+    fun changeMessageStyle() {
         styleCarousel.next().apply(editTextMessage)
         editTextMessage.invalidate()
     }

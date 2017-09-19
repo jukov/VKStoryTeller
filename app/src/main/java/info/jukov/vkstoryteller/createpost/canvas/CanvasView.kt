@@ -92,7 +92,7 @@ class CanvasView @JvmOverloads constructor(
 
     }
 
-    public fun addSticker(path: String): Boolean {
+    fun addSticker(path: String): Boolean {
         //TODO потенциально, можно добавиль больше стикеров, успеть вызвать метод еще раз до загрузки стикера
         if (stickerList.size < MAX_STICKERS) {
 

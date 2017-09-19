@@ -6,7 +6,7 @@ package info.jukov.vkstoryteller.util
  * Time: 11:18
  */
 
-public class ItemCarousel<T>(itemList: List<T>) {
+class ItemCarousel<T>(itemList: List<T>) {
 
     private val itemList: List<T>
 
@@ -20,7 +20,7 @@ public class ItemCarousel<T>(itemList: List<T>) {
         iterator = this.itemList.iterator()
     }
 
-    public fun next(): T {
+    fun next(): T {
         if (iterator.hasNext()) {
             return iterator.next()
         }

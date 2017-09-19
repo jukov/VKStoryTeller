@@ -18,8 +18,8 @@ class BackgroundAroundLineSpan : LineBackgroundSpan {
     private val currentRect = Rect()
     private val previousRect = Rect()
 
-    public var color: Int = Color.WHITE
-    public var alpha: Int = 255
+    var color: Int = Color.WHITE
+     var alpha: Int = 255
 
     override fun drawBackground(c: Canvas?,
                                 p: Paint?,

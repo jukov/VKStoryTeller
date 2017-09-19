@@ -39,12 +39,12 @@ open class CustomCursorEditText : EditText {
         cursorPaint.strokeWidth = STROKE
     }
 
-    public fun setCursorColor(@ColorInt color: Int) {
+    fun setCursorColor(@ColorInt color: Int) {
         cursorPaint.color = color
     }
 
     @ColorInt
-    public fun getCursorColor() = cursorPaint.color
+    fun getCursorColor() = cursorPaint.color
 
     override fun onDraw(c: Canvas?) {
         super.onDraw(c)

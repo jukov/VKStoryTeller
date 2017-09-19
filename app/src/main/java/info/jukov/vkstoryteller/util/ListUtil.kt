@@ -6,7 +6,7 @@ package info.jukov.vkstoryteller.util
  * Time: 14:58
  */
 
-public fun <T> MutableList<T>.moveToEnd(any: T) {
+fun <T> MutableList<T>.moveToEnd(any: T) {
     remove(any)
     add(any)
 }
