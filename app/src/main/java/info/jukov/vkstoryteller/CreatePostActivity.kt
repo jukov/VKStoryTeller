@@ -42,25 +42,25 @@ class SurfaceActivity : AppCompatActivity() {
         shadowShowAnimaion = AnimationUtils.loadAnimation(this, R.anim.shadow_appear)
         shadowHideAnimaion = AnimationUtils.loadAnimation(this, R.anim.shadow_disappear)
 
-        initTabLayout()
+//        initTabLayout()
         initStickerPicker()
         initShadow()
     }
 
-    private fun initTabLayout() {
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.wallPost))
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.story))
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-            }
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-            }
-        })
-    }
+//    private fun initTabLayout() {
+//        tabLayout.addTab(tabLayout.newTab().setText(R.string.wallPost))
+//        tabLayout.addTab(tabLayout.newTab().setText(R.string.story))
+//        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+//            override fun onTabReselected(tab: TabLayout.Tab?) {
+//            }
+//
+//            override fun onTabUnselected(tab: TabLayout.Tab?) {
+//            }
+//
+//            override fun onTabSelected(tab: TabLayout.Tab?) {
+//            }
+//        })
+//    }
 
     private fun initStickerPicker() {
 

@@ -20,12 +20,13 @@
 			android:scaleType="center"
 			app:srcCompat="@drawable/ic_toolbar_font"/>
 
-		<android.support.design.widget.TabLayout
-			android:id="@+id/tabLayout"
-			android:layout_width="@dimen/tabLayoutWidth"
-			android:layout_height="@dimen/toolbarSize"
-			android:layout_centerHorizontal="true"
-			style="@style/TabLayout"/>
+		<!--TODO: Реализовать переключение записи в историю-->
+		<!--<android.support.design.widget.TabLayout-->
+			<!--android:id="@+id/tabLayout"-->
+			<!--android:layout_width="@dimen/tabLayoutWidth"-->
+			<!--android:layout_height="@dimen/toolbarSize"-->
+			<!--android:layout_centerHorizontal="true"-->
+			<!--style="@style/TabLayout"/>-->
 
 		<ImageView
 			android:id="@+id/buttonStickerSelect"
