@@ -89,10 +89,13 @@
 			android:layout_height="0.5dp"
 			android:background="@color/trueBlackOpacity12"/>
 
-		<android.support.v7.widget.RecyclerView
-			android:id="@+id/recyclerViewStickers"
+		<GridView
+			android:id="@+id/gridViewStickers"
 			android:layout_width="match_parent"
-			android:layout_height="@dimen/stickerPickerRecyclerHeight"/>
+			android:layout_height="@dimen/stickerPickerRecyclerHeight"
+			android:numColumns="4"
+			android:verticalSpacing="@dimen/stickerMargin"
+			android:horizontalSpacing="@dimen/stickerMargin"/>
 
 	</LinearLayout>
 

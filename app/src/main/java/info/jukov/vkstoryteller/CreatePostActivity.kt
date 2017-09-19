@@ -1,6 +1,5 @@
 package info.jukov.vkstoryteller
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v7.app.AppCompatActivity
@@ -8,7 +7,6 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.screen_main.*
-import android.support.v7.widget.GridLayoutManager
 import info.jukov.vkstoryteller.util.CachedAssetsImageLoader
 import info.jukov.vkstoryteller.util.hideKeyboard
 import java.io.File
@@ -70,7 +68,7 @@ class SurfaceActivity : AppCompatActivity() {
 
         val imageLoader = CachedAssetsImageLoader(assets, 128000, stickerPaths.size, STICKER_PREVIEW_SAMPLE_SIZE)
 
-        val adapter = StickerAdapter(imageLoader, stickerPaths)
+        val adapter = StickerAdapter(this, imageLoader, stickerPaths)
 
         adapter.stickerClickListener = object : StickerAdapter.OnStickerClickListener {
             override fun onClick(path: String) {
@@ -79,8 +77,7 @@ class SurfaceActivity : AppCompatActivity() {
             }
         }
 
-        recyclerViewStickers.adapter = adapter
-        recyclerViewStickers.setLayoutManager(GridLayoutManager(this, 4))
+        gridViewStickers.adapter = adapter
     }
 
     private fun initShadow() {

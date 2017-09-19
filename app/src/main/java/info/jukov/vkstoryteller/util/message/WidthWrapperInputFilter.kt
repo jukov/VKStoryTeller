@@ -31,13 +31,6 @@ class WidthWrapperInputFilter(private val paint: Paint, private val maxWidth: In
             return ""
         }
 
-        Log.i("TAG",
-                "drtart: " + dstart +
-                        " source: " + source +
-                        " sourcePart: " + sourcePart +
-                        " dest: " + dest +
-                        " destPart: " + destPart)
-
         var previousReturnIndex = -1
 
         for (i in destPart.length - 1 downTo 0) {
