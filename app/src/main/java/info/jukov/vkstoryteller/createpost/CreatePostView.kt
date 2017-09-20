@@ -16,7 +16,6 @@ import info.jukov.vkstoryteller.R
 import info.jukov.vkstoryteller.createpost.canvas.CanvasView
 import info.jukov.vkstoryteller.createpost.canvas.Sticker
 import info.jukov.vkstoryteller.util.ItemCarousel
-import info.jukov.vkstoryteller.util.message.BackgroundAroundLineSpan
 import info.jukov.vkstoryteller.createpost.MessageStyle
 import info.jukov.vkstoryteller.util.message.WidthWrapperInputFilter
 import info.jukov.vkstoryteller.createpost.getMessageStyles

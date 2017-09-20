@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.view_create_post.view.*
 
 class MessageEditText : CustomCursorEditText {
 
-    val messageSpan = BackgroundAroundLineSpan()
+    val messageSpan = BackgroundAroundLineSpan(context.resources.displayMetrics)
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)

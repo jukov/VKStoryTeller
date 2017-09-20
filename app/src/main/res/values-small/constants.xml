@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<integer name="stickerSampleSizeInPicker">4</integer>
+	<integer name="stickerSampleSizeOnCanvas">3</integer>
+
+</resources>

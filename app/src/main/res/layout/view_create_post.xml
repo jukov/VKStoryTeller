@@ -15,7 +15,8 @@
 			android:id="@+id/canvasView"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:layout_centerVertical="true"/>
+			android:layout_centerVertical="true"
+			app:stickerSampleSize="@integer/stickerSampleSizeOnCanvas"/>
 
 		<!--FAB лежит внутри FrameLayout для того, чтобы при его масштабировании он оставался в центре.
 			Если просто привязать его к bottom с паддингом, он будет смещаться.-->

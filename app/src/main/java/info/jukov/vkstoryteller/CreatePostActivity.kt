@@ -14,8 +14,6 @@ import java.io.File
 
 private const val STICKERS_PATH = "stickers"
 
-private const val STICKER_PREVIEW_SAMPLE_SIZE = 3
-
 class SurfaceActivity : AppCompatActivity() {
 
     private lateinit var stickerPickerHideAnimaion: Animation
@@ -64,9 +62,11 @@ class SurfaceActivity : AppCompatActivity() {
 
     private fun initStickerPicker() {
 
+        val sampleSize = resources.getInteger(R.integer.stickerSampleSizeInPicker)
+
         val stickerPaths = assets.list(STICKERS_PATH).map { STICKERS_PATH + File.separator + it }
 
-        val imageLoader = CachedAssetsImageLoader(assets, 128000, stickerPaths.size, STICKER_PREVIEW_SAMPLE_SIZE)
+        val imageLoader = CachedAssetsImageLoader(assets, 128000, stickerPaths.size, sampleSize)
 
         val adapter = StickerAdapter(this, imageLoader, stickerPaths)
 

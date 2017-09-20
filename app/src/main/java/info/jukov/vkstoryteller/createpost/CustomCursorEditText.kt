@@ -18,6 +18,7 @@ import info.jukov.vkstoryteller.R
  * Из-за этого, при отрисовке background для текста с помощью Spans, курсор оказывается под этим background.
  *
  * Этот класс рисует курсор после отрисовки всех остальных элементов.
+ *
  */
 private const val STROKE = 5f
 

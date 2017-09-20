@@ -8,10 +8,12 @@ import android.graphics.Paint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.MotionEvent
 import android.view.View
+import info.jukov.vkstoryteller.R
 import info.jukov.vkstoryteller.util.CachedAssetsImageLoader
 import info.jukov.vkstoryteller.util.moveToEnd
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -50,7 +52,7 @@ class CanvasView @JvmOverloads constructor(
 
     var onStickerMoveListener: OnStickerMoveListner? = null
 
-    private val imageLoader = CachedAssetsImageLoader(context.assets, AVERAGE_STICKER_SIZE, AVERAGE_STICKER_COUNT)
+    private val imageLoader: CachedAssetsImageLoader
 
     private val random = Random()
 
@@ -65,6 +67,11 @@ class CanvasView @JvmOverloads constructor(
     private var currentSticker: Sticker? = null
 
     init {
+
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.CanvasView)
+        val stickerScaleType = typedArray.getInt(R.styleable.CanvasView_stickerSampleSize, 1)
+
+        imageLoader = CachedAssetsImageLoader(context.assets, AVERAGE_STICKER_SIZE, AVERAGE_STICKER_COUNT, stickerScaleType)
 
         setOnTouchListener { _, event ->
             when (event.actionMasked) {
@@ -166,7 +173,7 @@ class CanvasView @JvmOverloads constructor(
         stickerList.add(newSticker)
 
         newSticker.angle = (random.nextInt(60) - 30).toFloat() //From -30* to 30*
-        newSticker.x = (random.nextInt(width - newSticker.width.toInt()) + newSticker.width / 2).toFloat()
+        newSticker.x = (random.nextInt(Math.max(width - newSticker.width.toInt(), 1)) + newSticker.width / 2).toFloat()
         val randomYposition = random.nextBoolean();
 
         if (randomYposition) {

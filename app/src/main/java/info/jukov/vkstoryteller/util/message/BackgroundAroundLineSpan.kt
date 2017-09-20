@@ -2,21 +2,26 @@ package info.jukov.vkstoryteller.util.message
 
 import android.graphics.*
 import android.text.style.LineBackgroundSpan
+import android.util.DisplayMetrics
 
 /**
  * User: jukov
  * Date: 11.09.2017
  * Time: 22:26
  */
-private const val EDGE_RADIUS = 10
-private const val EDGE_DIAMETER = EDGE_RADIUS * 2
 
+/*  TODO Заменить рисование background с помощью spans на рисование напрямую в EditText,
+    посредством обводки всех строк с помощью Path в onDraw().
+    Так же, этот подход решит проблему с неправильной отрисовкой курсора в CustomColotEditText на api 16.*/
 private const val EDGE_OFFSET = 5
 
-class BackgroundAroundLineSpan : LineBackgroundSpan {
+class BackgroundAroundLineSpan(val displayMetrics: DisplayMetrics) : LineBackgroundSpan {
 
     private val currentRect = Rect()
     private val previousRect = Rect()
+
+    private val edgeRadius = (displayMetrics.density * 4 + 0.5).toInt()
+    private val egdeDiameter = edgeRadius * 2
 
     var color: Int = Color.WHITE
      var alpha: Int = 255
@@ -49,26 +54,24 @@ class BackgroundAroundLineSpan : LineBackgroundSpan {
         currentRect.left = (textCenter - width / 2).toInt()
         currentRect.right = (textCenter + width / 2).toInt()
 
-        currentRect.top -= 20
-        currentRect.bottom += 20
-        currentRect.left -= 20
-        currentRect.right += 23
+        val padding = (displayMetrics.density * 6 + 0.5f).toInt()
+        currentRect.inset(-padding, -padding)
 
-        canvas.drawRoundRect(RectF(currentRect), EDGE_RADIUS.toFloat(), EDGE_RADIUS.toFloat(), paint)
+        canvas.drawRoundRect(RectF(currentRect), edgeRadius.toFloat(), edgeRadius.toFloat(), paint)
 
         if (!isFirstLine) {
 
             paint.setXfermode(null)
 
-            if (currentRect.width() > previousRect.width() + EDGE_DIAMETER + EDGE_OFFSET) {
+            if (currentRect.width() > previousRect.width() + egdeDiameter + EDGE_OFFSET) {
 
-                makeBottomRightEdge(canvas, previousRect.left - EDGE_DIAMETER, currentRect.top - EDGE_DIAMETER)
+                makeBottomRightEdge(canvas, previousRect.left - egdeDiameter, currentRect.top - egdeDiameter)
 
-                makeBottomLeftEdge(canvas, previousRect.right, currentRect.top - EDGE_DIAMETER)
+                makeBottomLeftEdge(canvas, previousRect.right, currentRect.top - egdeDiameter)
 
-            } else if (currentRect.width() + EDGE_DIAMETER + EDGE_OFFSET < previousRect.width()) {
+            } else if (currentRect.width() + egdeDiameter + EDGE_OFFSET < previousRect.width()) {
 
-                makeTopRightEdge(canvas, currentRect.left - EDGE_DIAMETER, previousRect.bottom)
+                makeTopRightEdge(canvas, currentRect.left - egdeDiameter, previousRect.bottom)
 
                 makeTopLeftEdge(canvas, currentRect.right, previousRect.bottom)
 
@@ -79,19 +82,19 @@ class BackgroundAroundLineSpan : LineBackgroundSpan {
     }
 
     private fun makeBottomLeftEdge(canvas: Canvas, left: Int, top: Int) {
-        createEdge(canvas, EDGE_DIAMETER, left, top + EDGE_RADIUS, left, top)
+        createEdge(canvas, egdeDiameter, left, top + edgeRadius, left, top)
     }
 
     private fun makeBottomRightEdge(canvas: Canvas, left: Int, top: Int) {
-        createEdge(canvas, EDGE_DIAMETER, left + EDGE_RADIUS, top + EDGE_RADIUS, left, top)
+        createEdge(canvas, egdeDiameter, left + edgeRadius, top + edgeRadius, left, top)
     }
 
     private fun makeTopLeftEdge(canvas: Canvas, left: Int, top: Int) {
-        createEdge(canvas, EDGE_DIAMETER, left, top, left, top)
+        createEdge(canvas, egdeDiameter, left, top, left, top)
     }
 
     private fun makeTopRightEdge(canvas: Canvas, left: Int, top: Int) {
-        createEdge(canvas, EDGE_DIAMETER, left + EDGE_RADIUS, top, left, top)
+        createEdge(canvas, egdeDiameter, left + edgeRadius, top, left, top)
     }
 
     private fun createEdge(canvas: Canvas,
